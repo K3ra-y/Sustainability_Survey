@@ -4,7 +4,7 @@ We are looking at what factors influence a person's opinion and attitudes toward
 
 ### Team
 
-| Name  |  | Github.com |
+| Name   | Github.com |
 | :------: | :---: |
 | Marcelle Chiriboga Carvalho | `@mchiriboga` |
 | Weishun Deng | `@xiaoweideng` |
