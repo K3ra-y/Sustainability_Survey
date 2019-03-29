@@ -11,4 +11,4 @@
 
 |Milestone|Link|
 |---|---|
-|Milestone 1|[Proposal](Milestone1/Milestone1.md)|
+|Milestone 1|[Proposal](Milestone1.md)|
