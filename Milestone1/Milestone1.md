@@ -1,17 +1,6 @@
-# Sustainability Survey
-
-## Team
-
-| Name   | Github.com |
-| :------: | :---: |
-| Marcelle Chiriboga Carvalho | [`@mchiriboga`](https://github.com/mchiriboga) |
-| Weishun Deng | [`@xiaoweideng`](https://github.com/xiaoweideng) |
-| Heather Van Tassel | [`@heathervant`](https://github.com/heathervant) |
-| Kera Yucel | [`@K3ra-y`](https://github.com/K3ra-y) |
-
 # Aim of the Survey
 
-***Question of Interest :*** Does a person’s frequency of recycling influence her/his opinion and attitudes towards the importance of sustainability?
+***Question of Interest :*** Does person’s frequency of recycling influence her/his opinion and attitudes towards the importance of sustainability?
 
 ## Survey will consist of following questions;
 
@@ -50,11 +39,11 @@
 
  # Plan for analyzing the survey results
 
- **Null hypothesis**: A person’s frequency of recycling does not influence her/his opinion and attitudes towards the importance of sustainability.
+ **Null hypothesis**: Person’s frequency of recycling does not influence her/his opinion and attitudes towards the importance of sustainability.
 
 
 
- **Alternative hypothesis**: A person’s frequency of recycling influences her/his opinion and attitudes towards the importance of sustainability.
+ **Alternative hypothesis**: Person’s frequency of recycling influences her/his opinion and attitudes towards the importance of sustainability.
 
  Response variable will be set as a scale and this will allow us to have a continuous response variable. We plan to perform *exploratory data analysis* to summarize the main quality of the response variable and predictors. Then we will use *linear regression* to identify which  predictors (frequency of recycling, age and family habits) has an effect on the response variable.
 
