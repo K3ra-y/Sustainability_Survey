@@ -1,14 +1,3 @@
-# Sustainability Survey
-
-## Team
-
-| Name   | Github.com |
-| :------: | :---: |
-| Marcelle Chiriboga Carvalho | [`@mchiriboga`](https://github.com/mchiriboga) |
-| Weishun Deng | [`@xiaoweideng`](https://github.com/xiaoweideng) |
-| Heather Van Tassel | [`@heathervant`](https://github.com/heathervant) |
-| Kera Yucel | [`@K3ra-y`](https://github.com/K3ra-y) |
-
 # Aim of the Survey
 
 ***Question of Interest :*** Does person’s frequency of recycling influence her/his opinion and attitudes towards the importance of sustainability?
