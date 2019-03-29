@@ -1,4 +1,4 @@
-# Milestone 1
+# Milestone 1 - Proposal
 
 ### Aim of the Survey
 
