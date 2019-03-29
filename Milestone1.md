@@ -28,7 +28,7 @@
   - `Yes`/`No`
 
 
-* **Bonus Question** [Confounder] After watching this video about recycling, how sustainable are you from 1-10 scale? *Continuous*
+* **Bonus Question** [Confounder - Continuous] After watching this video about recycling, how sustainable are you from 1-10 scale?
 
   - Again, this will be a scaler with 1-10 scale.
 
