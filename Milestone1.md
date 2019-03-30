@@ -1,5 +1,8 @@
 # Milestone 1 - Proposal
 
+![](https://raw.githubusercontent.com/UBC-MDS/Sustainability_Survey/master/images/green_is_a_trend.png)
+[source](https://www.buildnative.com/green-is-a-trend-sustainability-is-a-mindset/)
+
 ### Aim of the Survey
 
 ***Question of Interest :*** Does a person’s frequency of recycling influence her/his opinion and attitudes towards the importance of sustainability? We are interested in this question because sometimes our actions do not line up with our beliefs. This survey will attempt to understand whether a person's actions are actually predictive of their beliefs, by looking at how frequently they recycle compared to how important they believe ecological sustainability to be.
