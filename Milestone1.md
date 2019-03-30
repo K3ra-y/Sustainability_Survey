@@ -28,7 +28,7 @@
   - `Yes`/`No`
 
 
-* **Bonus Question** [Confounder - Continuous] After watching this video about recycling, how important is sustainability to you on a self-ranked scale from 1-10 scale?
+* **Bonus Question** [Confounder - Continuous] After watching [this video](https://www.youtube.com/watch?v=Zsc8G0NnMTs) about recycling, how important is sustainability to you on a self-ranked scale from 1-10 scale?
 
   - Again, this will be a scaler with 1-10 scale.
 
