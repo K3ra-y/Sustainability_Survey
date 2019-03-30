@@ -12,3 +12,5 @@
 |Milestone|Link|
 |---|---|
 |Milestone 1|[Proposal](Milestone1.md)|
+
+![](https://raw.githubusercontent.com/UBC-MDS/Sustainability_Survey/master/images/green_is_a_trend.png)
