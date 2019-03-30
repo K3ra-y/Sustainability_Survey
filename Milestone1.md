@@ -40,9 +40,9 @@
 
  ### Plan for Analyzing the Survey Results
 
- **Null hypothesis**: A persons opinion and attitudes towards the importance of sustainability is not affected by frequency of recycling, age, and whether they grow up in environmentally conscious family or not.
+ **Null hypothesis**: A person's opinion and attitudes towards the importance of sustainability is not affected by frequency of recycling, age, and whether they grow up in environmentally conscious family or not.
 
- **Alternative hypothesis**: A persons opinion and attitudes towards the importance of sustainability is affected by frequency of recycling, age or whether they grow up in environmentally conscious family or not.
+ **Alternative hypothesis**: A person's opinion and attitudes towards the importance of sustainability is affected by frequency of recycling, age or whether they grow up in environmentally conscious family or not.
 
  Response variable will be set as a scale and this will allow us to have a continuous response variable. We plan to perform *exploratory data analysis* to summarize the main quality of the response variable and predictors. Then we will use *linear regression* to identify which  predictors (frequency of recycling, age and family habits) has an effect on the response variable.
 
