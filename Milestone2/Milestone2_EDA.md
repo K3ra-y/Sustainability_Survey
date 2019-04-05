@@ -83,7 +83,7 @@ tidy_data %>%
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-![](Milestone2_EDA_files/figure-markdown_github/plot%20family%20vs.%20frequency-1.png)
+![](Milestone2_EDA_files/imgs/plot%20family%20vs.%20frequency-1.png)
 
 > As we can see from the above plot, most of our respondent have a good recycling habit whether or not they live in a environmentally-consicous family. However, if one respondent did not grow up in an environmentally-conscious family then he/she may do not recycle at all.
 
@@ -99,6 +99,6 @@ qplot(tidy_data$Q3, tidy_data$Q1_1, geom="boxplot") +
        axis.title = element_text(size = 13))
 ```
 
-![](Milestone2_EDA_files/figure-markdown_github/plot%20age%20group%20vs.%20sustainability%20importance%20before%20watching%20the%20video-1.png)
+![](Milestone2_EDA_files/imgs/plot%20age%20group%20vs.%20sustainability%20importance%20before%20watching%20the%20video-1.png)
 
 > Analyzing the boxplots above is easy to see that older people (`35-39` and `40+` groups) consider sustainability more important than younger groups, having a higher mean (~9 in a scale from 1-10) and narrower range. Additionaly, the other 3 groups (`20-24`, `25-29` and `30-34`) have one outlier each, where at least one respondent of each of these groups evaluated sustainability with a considerable lower importance in comparison with the other participants from their respective group. However, it's important to take into account that we have fewer responses from the second oldest age group, which can distort the analysis.
