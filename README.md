@@ -1,5 +1,7 @@
 # Sustainability Survey
 
+![](images/green_is_a_trend.png)
+
 ### Contributors
 
 - [Heather Van Tassel](https://github.com/heathervant)
@@ -17,4 +19,8 @@
 ||[EDA on private repo](https://github.ubc.ca/MDS-2018-19/Sustainable_Survey/blob/master/Milestone2/Milestone2_EDA.md)|
 ||[EDA on `Github.com` repo](https://github.com/UBC-MDS/Sustainability_Survey/blob/master/Milestone2/Milestone2_EDA.md)|
 
-![](https://raw.githubusercontent.com/UBC-MDS/Sustainability_Survey/master/images/green_is_a_trend.png)
+### Dependencies
+
+  - `R` version 3.5.1
+  - `tidyverse` version 1.2.1
+
