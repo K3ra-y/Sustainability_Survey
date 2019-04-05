@@ -68,7 +68,7 @@ tidy_data %>%
   facet_grid(~Q4) +
   theme_bw() +
   labs(x = "How often do you recycle? ",
-       title = "Frequency of recycling vs. Did you grow up in an environmentally-conscious family?") +
+       title = "Frequency of recycling vs. environmentally-conscious family") +
   scale_fill_discrete(name = "environmentally-conscious family?") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
