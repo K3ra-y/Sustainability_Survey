@@ -9,6 +9,7 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(fig.path = "Milestone2_EDA_files/imgs/")
 library(tidyverse)
+library(gridExtra)
 ```
 
 This dataset is aimed to answer the question "Does a person’s frequency of recycling influence her/his opinion and attitudes towards the importance of sustainability?". The description of columns as follows:
@@ -125,21 +126,18 @@ tidy_data %>% filter(Q5 %in% 'Have watched') %>%
 
 > The respondents changed their opinion on how sustainable they think they are in the positive direction. There were only two respondents who scored less after watching the video .Respondents scored more after the watching the video are the ones recycle usually. Respondents score does not appear to be affected by age group, there may be other underlying confounding factors in which we did not capture in our data collection. 
 
-```{r grouped bar}
-#ggplot(mtcars, aes(factor(cyl), fill = factor(vs))) +
- # geom_bar(position = "dodge2")
-
-library(forcats)
-#as.factor(tidy_data$Q1_1)
-#as.factor(tidy_data$Q6_1)
-tidy_data %>% 
-  filter(Q5 %in% 'Have watched') %>% 
-  #Q1_1= as.factor(Q1_1)
-  #Q6_1= as.factor(Q6_1)
-  #before_vs_after = factor(Q1_1) %>%
-  ggplot(aes(Q1_1, fill = Q6_1)) +
-  geom_bar(position= "dodge2") +
-  labs(x = "Rating before and after watching the video") +
+```{r grouped bar, warning=FALSE}
+p1 <- tidy_data %>% 
+  ggplot(aes(Q1_1)) +
+  geom_bar(fill = "cyan3") +
+  labs(x = "Rating before watching the video") +
   theme_bw()
 
+p2 <- tidy_data %>% 
+  ggplot(aes(Q6_1)) +
+  geom_bar(fill = "pink3") +
+  labs(x = "Rating after watching the video", y = "") +
+  theme_bw()
+
+grid.arrange(p1, p2, nrow = 1)
 ```
