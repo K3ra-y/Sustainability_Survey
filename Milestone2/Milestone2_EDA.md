@@ -1,6 +1,6 @@
 Milestone2\_EDA
 ================
-Wilson D., Marcelle C. Kera Y. Heather VT.
+Wilson D., Marcelle C., Kera Y., Heather VT.
 4/5/2019
 
 This dataset is aimed to answer the question “Does a person’s frequency
@@ -61,7 +61,11 @@ summary(tidy_data)
 > 
 > **Q1\_1: How important is being environmentally sustainable to you on
 > a scale from 1-10?**: on average, people rated sustainability as a 7.7
-> initially. **Q2: How often do you generally recycle?**:
+> initially.
+> 
+> **Q2: How often do you generally recycle?**: Most of participants have
+> a good recycling habit: 29 answered “Usually” and 27 answered
+> “Always”. Only 4 other participants recycle sometimes or rarely.
 > 
 > **Q3: What is your age group?**: 60% of the participants are from the
 > younger groups, having 20-29 years old. We had a considerable amount
@@ -83,7 +87,7 @@ summary(tidy_data)
 > on Q5 that they passed the video, and only 9 participants answered NA
 > to Q6\_1. Weird.
 
-# Explanatary Data Analysis
+# Explanatory Data Analysis
 
 ``` r
 tidy_data %>% 
@@ -92,9 +96,11 @@ tidy_data %>%
   facet_grid(~Q4) +
   theme_bw() +
   labs(x = "How often do you recycle? ",
-       title = "Frequency of recycling vs. environmentally-conscious family") +
+       title = "Frequency vs. environmentally-conscious family") +
   scale_fill_discrete(name = "environmentally-conscious family?") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 9,angle = 45, hjust = 1),
+        axis.title = element_text(size = 10))
 ```
 
 ![](Milestone2_EDA_files/imgs/plot%20family%20vs.%20frequency-1.png)<!-- -->
@@ -103,27 +109,17 @@ tidy_data %>%
 > recycling habit whether or not they live in a
 > environmentally-consicous family. However, if one respondent did not
 > grow up in an environmentally-conscious family then he/she may not
-> recycle at
-    all.
-
-``` r
-tidy_data$Q3
-```
-
-    ##  [1] 20-24 30-34 20-24 30-34 20-24 25-29 30-34 20-24 25-29 20-24 20-24
-    ## [12] 25-29 35-39 20-24 25-29 25-29 35-39 25-29 25-29 25-29 30-34 20-24
-    ## [23] 30-34 30-34 40+   25-29 20-24 40+   25-29 20-24 25-29 25-29 25-29
-    ## [34] 20-24 40+   25-29 30-34 25-29 20-24 30-34 35-39 25-29 20-24 20-24
-    ## [45] 20-24 30-34 20-24 40+   40+   30-34 20-24 25-29 20-24 40+   30-34
-    ## [56] 40+   40+   40+   20-24 40+  
-    ## Levels: 20-24 25-29 30-34 35-39 40+
+> recycle at all.
 
 ``` r
 ggplot(tidy_data, aes(Q3)) +
   geom_histogram(stat="count") +
   labs(x = "Age groups",
        title = "Distribution of Ages of Survey Respondents")+
-  theme_bw() 
+  theme_bw() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 14),
+        axis.title = element_text(size = 13))
 ```
 
     ## Warning: Ignoring unknown parameters: binwidth, bins, pad
@@ -137,9 +133,9 @@ qplot(tidy_data$Q3, tidy_data$Q1_1, geom="boxplot") +
   labs(x = "Age Group",
        y = "Sustainability Importance") +
   ggtitle("Sustainability Importance vs. Age Group") +
-  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5)) +
-  theme(axis.text = element_text(size = 14),
-       axis.title = element_text(size = 13))
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 14),
+        axis.title = element_text(size = 13))
 ```
 
 ![](Milestone2_EDA_files/imgs/plot%20age%20group%20vs.%20sustainability%20importance%20before%20watching%20the%20video-1.png)<!-- -->
@@ -160,11 +156,14 @@ tidy_data %>% filter(Q5 %in% 'Have watched') %>%
   ggplot(aes(x = Q1_1, y = Q6_1, color = Q2)) +
   geom_point() +
   geom_jitter() +
-  #facet_grid(.~Q3) +
   labs(x = "Rating before watching the video",
        y = "Rating after watching the video",
-       colour ="Recycling frequency") +
-  theme_bw()
+       colour ="Recycling frequency",
+       title = "Scatter plot of frequency vs ratings") +
+  theme_bw() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 14),
+        axis.title = element_text(size = 13))
 ```
 
 ![](Milestone2_EDA_files/imgs/unnamed-chunk-1-1.png)<!-- -->
@@ -174,11 +173,14 @@ tidy_data %>% filter(Q5 %in% 'Have watched') %>%
   ggplot(aes(x = Q1_1, y = Q6_1, color = Q3)) +
   geom_point() +
   geom_jitter() +
-  #facet_grid(.~Q3) +
   labs(x = "Rating before watching the video",
        y = "Rating after watching the video",
-       colour ="Age group") +
-  theme_bw()
+       colour ="Age group",
+       title = "Scatter plot of age vs ratings") +
+  theme_bw() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 14),
+        axis.title = element_text(size = 13))
 ```
 
 ![](Milestone2_EDA_files/imgs/unnamed-chunk-1-2.png)<!-- -->
@@ -195,16 +197,21 @@ tidy_data %>% filter(Q5 %in% 'Have watched') %>%
 p1 <- tidy_data %>% 
   ggplot(aes(Q1_1)) +
   geom_bar(fill = "cyan3") +
-  labs(x = "Rating before watching the video") +
+  ylim(0, 16) +
+  labs(title = "Rating before watching the video", x = "Ratings") +
   theme_bw()
 
 p2 <- tidy_data %>% 
+  filter(Q5 == "Have watched") %>% 
   ggplot(aes(Q6_1)) +
   geom_bar(fill = "pink3") +
-  labs(x = "Rating after watching the video", y = "") +
+  ylim(0, 16) +
+  labs(title = "Rating after watching the video", y = "", x = "Ratings") +
   theme_bw()
 
 grid.arrange(p1, p2, nrow = 1)
 ```
 
 ![](Milestone2_EDA_files/imgs/grouped%20bar-1.png)<!-- -->
+
+> Discussion here.
