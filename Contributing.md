@@ -29,7 +29,7 @@ This is a good way to introduce yourself.
     or typos/bugs, you are allowed to use branching, as described in the [GitFlow guide](https://guides.github.com/introduction/flow/), and submit a pull request (PR).
     If you'd like to suggest substantial changes such as removing or adding features in the package,
     please first raise an issue to allow the maintainers to comment, so we can discuss whether/how these
-    changes should be made.
+    changes should be made. We also rely on issues to assign tasks and avoid rework.
 
 ## Quick contribution tips and guidelines
 
