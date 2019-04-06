@@ -59,7 +59,7 @@ summary(tidy_data)
 >
 > **Q5: Will you watch the video?**: Only 63% of the respondents confirmed that they watched the video.
 >
-> **Q6_1: After watching this video about recycling, how important is sustainability to you on a self-ranked scale from 1-10 scale?**: The self rank about sustainability importance after watching the video had a slightly higher mean and median than the first one (9 and 8.1 vs. 8 and 7.8, respectively). However, some people who didn't watch the video answered the last question, since we had 15 respondents who said on Q5 that they passed the video, and only 9 participants answered NA to Q6_1. Weird.
+> **Q6_1: After watching this video about recycling, how important is sustainability to you on a self-ranked scale from 1-10 scale?**: The self rank about sustainability importance after watching the video had a slightly higher mean and median than the first one (9 and 8.1 vs. 8 and 7.8, respectively). However, some people who didn't watch the video answered the last question, since we had 15 respondents who said on Q5 that they passed the video, and only 9 participants answered NA to Q6_1. 
 
 # Explanatory Data Analysis
 
@@ -81,9 +81,9 @@ tidy_data %>%
 
 ```{R age distribution}
 ggplot(tidy_data, aes(Q3)) +
-  geom_histogram(stat="count") +
+  geom_histogram(stat="count", fill="brown") +
   labs(x = "Age groups",
-       title = "Distribution of Ages of Survey Respondents")+
+       title = "Distribution of Ages of Survey Respondents") +
   theme_bw() +
   theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
         axis.text = element_text(size = 14),
@@ -139,21 +139,21 @@ tidy_data %>% filter(Q5 %in% 'Have watched') %>%
 
 ```{r grouped bar, warning=FALSE}
 p1 <- tidy_data %>% 
+  filter(Q5 %in% 'Have watched') %>%
   ggplot(aes(Q1_1)) +
   geom_bar(fill = "cyan3") +
-  ylim(0, 16) +
+  ylim(0, 15) +
   labs(title = "Rating before watching the video", x = "Ratings") +
   theme_bw()
 
-p2 <- tidy_data %>% 
-  filter(Q5 == "Have watched") %>% 
+p2 <- tidy_data %>% filter(Q5 %in% 'Have watched') %>%
   ggplot(aes(Q6_1)) +
   geom_bar(fill = "pink3") +
-  ylim(0, 16) +
+  ylim(0, 15) +
   labs(title = "Rating after watching the video", y = "", x = "Ratings") +
   theme_bw()
 
 grid.arrange(p1, p2, nrow = 1)
 ```
 
-> Discussion here.
+> These histograms show that there was a slight shift in ratings towards more positive ratings after watching the video. Further analysis with confidence intervals will follow.
