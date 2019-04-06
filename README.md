@@ -23,4 +23,4 @@
 
   - `R` version 3.5.1
   - `tidyverse` version 1.2.1
-
+  - `gridExtra` version 2.3
