@@ -3,24 +3,21 @@ Milestone2\_EDA
 Wilson D., Marcelle C.
 4/5/2019
 
-This dataset is aimed to answer the question “Does a person’s frequency
-of recycling influence her/his opinion and attitudes towards the
-importance of sustainability?”. The description of columns as follows:
+This dataset is aimed to answer the question "Does a personâs frequency of recycling influence her/his opinion and attitudes towards the importance of sustainability?". The description of columns as follows:
 
-  - `Q1_1`: How important is being environmentally sustainable to you on
-    a scale from 1-10?
-  - `Q2`: How often do you generally recycle?
-  - `Q3`: What is your age group?
-  - `Q4`: Did you grow up in an environmentally-conscious family?
-  - `Q5`: Will you watch the video?
-  - `Q6_1`: After watching this video about recycling, how important is
-    sustainability to you on a self-ranked scale from 1-10 scale?
+-   `Q1_1`: How important is being environmentally sustainable to you on a scale from 1-10?
+-   `Q2`: How often do you generally recycle?
+-   `Q3`: What is your age group?
+-   `Q4`: Did you grow up in an environmentally-conscious family?
+-   `Q5`: Will you watch the video?
+-   `Q6_1`: After watching this video about recycling, how important is sustainability to you on a self-ranked scale from 1-10 scale?
 
-# Load Data
+Load Data
+=========
 
 ``` r
 #tidy data and give correct data type
-tidy_data <- read_csv("../data/Sustainable Survey_April 4, 2019_18.11.csv", col_types = cols(.default = col_character()))[3:62,18:23]
+tidy_data <- read_csv("../../Sustainable_Survey/data/Sustainable Survey_April 4, 2019_18.11.csv", col_types = cols(.default = col_character()))[3:62,18:23]
 tidy_data <- tidy_data %>% 
   mutate(Q1_1 = as.numeric(Q1_1),
          Q2 = as.factor(Q2),
@@ -58,33 +55,21 @@ summary(tidy_data)
     ##  NA's   :9
 
 > Analyzing the summary table, we noticed:
-> 
-> **Q1\_1: How important is being environmentally sustainable to you on
-> a scale from 1-10?**:
-> 
+>
+> **Q1\_1: How important is being environmentally sustainable to you on a scale from 1-10?**:
+>
 > **Q2: How often do you generally recycle?**:
-> 
-> **Q3: What is your age group?**: 60% of the participants are from the
-> younger groups, having 20-29 years old. We had a considerable amount
-> of people with 40+, but only 5% of the respondents are 35-39 years
-> old.
-> 
-> **Q4: Did you grow up in an environmentally-conscious family?**: 46.7%
-> of the respondents grow up in an environmentally-conscious family.
-> 
-> **Q5: Will you watch the video?**: Only 63% of the respondents
-> confirmed that they watched the video.
-> 
-> **Q6\_1: After watching this video about recycling, how important is
-> sustainability to you on a self-ranked scale from 1-10 scale?**: The
-> self rank about sustainability importance after watching the video had
-> a slightly higher mean and median than the first one (9 and 8.1 vs. 8
-> and 7.8, respectively). However, some people who didn’t watch the
-> video answered the last question, since we had 15 respondents who said
-> on Q5 that they passed the video, and only 9 participants answered NA
-> to Q6\_1.
+>
+> **Q3: What is your age group?**: 60% of the participants are from the younger groups, having 20-29 years old. We had a considerable amount of people with 40+, but only 5% of the respondents are 35-39 years old.
+>
+> **Q4: Did you grow up in an environmentally-conscious family?**: 46.7% of the respondents grow up in an environmentally-conscious family.
+>
+> **Q5: Will you watch the video?**: Only 63% of the respondents confirmed that they watched the video.
+>
+> **Q6\_1: After watching this video about recycling, how important is sustainability to you on a self-ranked scale from 1-10 scale?**: The self rank about sustainability importance after watching the video had a slightly higher mean and median than the first one (9 and 8.1 vs. 8 and 7.8, respectively). However, some people who didn't watch the video answered the last question, since we had 15 respondents who said on Q5 that they passed the video, and only 9 participants answered NA to Q6\_1.
 
-# EDA
+Explanatary Data Analysis
+=========================
 
 ``` r
 tidy_data %>% 
@@ -98,13 +83,9 @@ tidy_data %>%
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-![](Milestone2_EDA_files/imgs/plot%20family%20vs.%20frequency-1.png)<!-- -->
+![](Milestone2_EDA_files/imgs/plot%20family%20vs.%20frequency-1.png)
 
-> As we can see from the above plot, most of our respondent have a good
-> recycling habit whether or not they live in a
-> environmentally-consicous family. However, if one respondent did not
-> grow up in an environmentally-conscious family then he/she may do not
-> recycle at all.
+> As we can see from the above plot, most of our respondent have a good recycling habit whether or not they live in a environmentally-consicous family. However, if one respondent did not grow up in an environmentally-conscious family then he/she may do not recycle at all.
 
 ``` r
 qplot(tidy_data$Q3, tidy_data$Q1_1, geom="boxplot") +
@@ -118,15 +99,36 @@ qplot(tidy_data$Q3, tidy_data$Q1_1, geom="boxplot") +
        axis.title = element_text(size = 13))
 ```
 
-![](Milestone2_EDA_files/imgs/plot%20age%20group%20vs.%20sustainability%20importance%20before%20watching%20the%20video-1.png)<!-- -->
+![](Milestone2_EDA_files/imgs/plot%20age%20group%20vs.%20sustainability%20importance%20before%20watching%20the%20video-1.png)
 
-> Analyzing the boxplots above is easy to see that older people (`35-39`
-> and `40+` groups) consider sustainability more important than younger
-> groups, having a higher mean (~9 in a scale from 1-10) and narrower
-> range. Additionaly, the other 3 groups (`20-24`, `25-29` and `30-34`)
-> have one outlier each, where at least one respondent of each of these
-> groups evaluated sustainability with a considerable lower importance
-> in comparison with the other participants from their respective group.
-> However, it’s important to take into account that we have fewer
-> responses from the second oldest age group, which can distort the
-> analysis.
+> Analyzing the boxplots above is easy to see that older people (`35-39` and `40+` groups) consider sustainability more important than younger groups, having a higher mean (~9 in a scale from 1-10) and narrower range. Additionaly, the other 3 groups (`20-24`, `25-29` and `30-34`) have one outlier each, where at least one respondent of each of these groups evaluated sustainability with a considerable lower importance in comparison with the other participants from their respective group. However, it's important to take into account that we have fewer responses from the second oldest age group, which can distort the analysis.
+
+``` r
+tidy_data %>% filter(Q5 %in% 'Have watched') %>% 
+  ggplot(aes(x = Q1_1, y = Q6_1, color = Q2)) +
+  geom_point() +
+  geom_jitter() +
+  #facet_grid(.~Q3) +
+  labs(x = "Rating before watching the video",
+       y = "Rating after watching the video",
+       colour ="Recycling frequency") +
+  theme_bw()
+```
+
+![](Milestone2_EDA_files/imgs/unnamed-chunk-1-1.png)
+
+``` r
+tidy_data %>% filter(Q5 %in% 'Have watched') %>% 
+  ggplot(aes(x = Q1_1, y = Q6_1, color = Q3)) +
+  geom_point() +
+  geom_jitter() +
+  #facet_grid(.~Q3) +
+  labs(x = "Rating before watching the video",
+       y = "Rating after watching the video",
+       colour ="Age group") +
+  theme_bw()
+```
+
+![](Milestone2_EDA_files/imgs/unnamed-chunk-1-2.png)
+
+> The respondents changed their opinion on how sustainable they think they are in the positive direction. There were only two respondents who scored less after watching the video .Respondents scored more after the watching the video are the ones recycle usually. Respondents score was not affected by age group, there may be other underlying confounding factors in which we did not capture in our data collection.
