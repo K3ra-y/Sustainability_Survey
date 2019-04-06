@@ -79,7 +79,7 @@ tidy_data %>%
 
 > As we can see from the above plot, most of our respondent have a good recycling habit whether or not they live in a environmentally-consicous family. However, if one respondent did not grow up in an environmentally-conscious family then he/she may not recycle at all.
 
-```{R age distribution}
+```{R age distribution, warning = FALSE}
 ggplot(tidy_data, aes(Q3)) +
   geom_histogram(stat="count", fill="brown") +
   labs(x = "Age groups",
@@ -137,21 +137,30 @@ tidy_data %>% filter(Q5 %in% 'Have watched') %>%
 
 > The respondents changed their opinion on how sustainable they think they are in the positive direction. There were only two respondents who scored less after watching the video .Respondents scored more after the watching the video are the ones recycle usually. Respondents score does not appear to be affected by age group, there may be other underlying confounding factors in which we did not capture in our data collection. 
 
-```{r grouped bar, warning=FALSE}
-p1 <- tidy_data %>% 
-  filter(Q5 %in% 'Have watched') %>%
-  ggplot(aes(Q1_1)) +
-  geom_bar(fill = "cyan3") +
-  ylim(0, 15) +
-  labs(title = "Rating before watching the video", x = "Ratings") +
-  theme_bw()
 
-p2 <- tidy_data %>% filter(Q5 %in% 'Have watched') %>%
+```{r grouped bar, warning=FALSE}
+p1 <- tidy_data %>%
+  ggplot(aes(Q1_1)) +
+  geom_bar(fill = "cyan3", bins = 10) +
+  scale_x_continuous(breaks = c(1:10)) +
+  ylim(0, 16) +
+  labs(title = "Rating before watching the video", x = "Ratings") +
+  theme_bw() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 14),
+        axis.title = element_text(size = 11))
+
+p2 <- tidy_data %>%
+  filter(Q5 %in% 'Have watched') %>%
   ggplot(aes(Q6_1)) +
-  geom_bar(fill = "pink3") +
-  ylim(0, 15) +
+  geom_bar(fill = "pink3" ,bins = 10) +
+  scale_x_continuous(breaks = c(1:10),limits=c(1, 11)) +
+  ylim(0, 16) +
   labs(title = "Rating after watching the video", y = "", x = "Ratings") +
-  theme_bw()
+  theme_bw() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 14),
+        axis.title = element_text(size = 11))
 
 grid.arrange(p1, p2, nrow = 1)
 ```
