@@ -79,8 +79,8 @@ tidy_data %>%
   facet_grid(~Q4) +
   theme_bw() +
   labs(x = "How often do you recycle? ",
-       title = "Frequency vs. Environmentally-conscious Family") +
-  scale_fill_discrete(name = "Environmentally-conscious Family?") +
+       title = "Recycling Freq. vs. Environmentally-Conscious Family") +
+  scale_fill_discrete(name = "Environmentally-Conscious Family?") +
   theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
         axis.text.x = element_text(size = 9, angle = 45, hjust = 1),
         axis.title = element_text(size = 10))
@@ -120,6 +120,37 @@ qplot(tidy_data$Q3, tidy_data$Q1_1, geom="boxplot") +
 > Analyzing the boxplots above is easy to see that older people (`35-39` and `40+` groups) consider sustainability more important than younger groups, having a higher mean (~9 in a scale from 1-10) and narrower range. Additionaly, the other 3 groups (`20-24`, `25-29` and `30-34`) have one outlier each, where at least one respondent of each of these groups evaluated sustainability with a considerable lower importance in comparison with the other participants from their respective group. However, it's important to take into account that we have fewer responses from the second oldest age group, which can distort the analysis. Further analysis with confidence intervals is warranted.
 
 ``` r
+p1 <- tidy_data %>%
+  ggplot(aes(Q1_1)) +
+  geom_bar(fill = "cyan3", bins = 10) +
+  scale_x_continuous(breaks = c(1:10)) +
+  ylim(0, 16) +
+  labs(title = "Rating before watching the video", x = "Ratings") +
+  theme_bw() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 13),
+        axis.title = element_text(size = 11))
+
+p2 <- tidy_data %>%
+  filter(Q5 %in% 'Have watched') %>%
+  ggplot(aes(Q6_1)) +
+  geom_bar(fill = "pink3" ,bins = 10) +
+  scale_x_continuous(breaks = c(1:10),limits=c(1, 11)) +
+  ylim(0, 16) +
+  labs(title = "Rating after watching the video", y = "", x = "Ratings") +
+  theme_bw() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 14),
+        axis.title = element_text(size = 11))
+
+grid.arrange(p1, p2, nrow = 1)
+```
+
+![](Milestone2_EDA_files/imgs/grouped%20bar-1.png)
+
+> These histograms show that there was a slight shift in ratings towards more positive ratings after watching the video. Further analysis with confidence intervals will follow.
+
+``` r
 # self rank before and after watching the video for recycling frequency, for respondents who watched the video
 tidy_data %>% filter(Q5 %in% 'Have watched') %>% 
   ggplot(aes(x = Q1_1, y = Q6_1, color = Q2), alpha = 0.5) +
@@ -156,34 +187,3 @@ tidy_data %>% filter(Q5 %in% 'Have watched') %>%
 ![](Milestone2_EDA_files/imgs/plot%20self%20rank%20before%20and%20after%20watching%20the%20video%20for%20recycling%20frequency%20and%20age%20group-2.png)
 
 > Looking only at the respondents who reported having watched the video, most of them changed their opinion on how sustainable they think they are in the positive direction, as evidenced by the higher number of points above the diagonal line. There was only one respondents who scored less after watching the video. Respondents who scored more after the watching the video are the ones who usually recycle. Respondents scores do not appear to be affected by age group. There may be other underlying confounding factors in which we did not capture in our data collection.
-
-``` r
-p1 <- tidy_data %>%
-  ggplot(aes(Q1_1)) +
-  geom_bar(fill = "cyan3", bins = 10) +
-  scale_x_continuous(breaks = c(1:10)) +
-  ylim(0, 16) +
-  labs(title = "Rating before watching the video", x = "Ratings") +
-  theme_bw() +
-  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
-        axis.text = element_text(size = 13),
-        axis.title = element_text(size = 11))
-
-p2 <- tidy_data %>%
-  filter(Q5 %in% 'Have watched') %>%
-  ggplot(aes(Q6_1)) +
-  geom_bar(fill = "pink3" ,bins = 10) +
-  scale_x_continuous(breaks = c(1:10),limits=c(1, 11)) +
-  ylim(0, 16) +
-  labs(title = "Rating after watching the video", y = "", x = "Ratings") +
-  theme_bw() +
-  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
-        axis.text = element_text(size = 14),
-        axis.title = element_text(size = 11))
-
-grid.arrange(p1, p2, nrow = 1)
-```
-
-![](Milestone2_EDA_files/imgs/grouped%20bar-1.png)
-
-> These histograms show that there was a slight shift in ratings towards more positive ratings after watching the video. Further analysis with confidence intervals will follow.
