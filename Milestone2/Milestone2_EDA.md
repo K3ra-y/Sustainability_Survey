@@ -81,7 +81,7 @@ tidy_data %>%
   labs(x = "How often do you recycle? ",
        title = "Recycling Freq. vs. Environmentally-Conscious Family") +
   scale_fill_discrete(name = "Environmentally-Conscious Family?") +
-  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+  theme(plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
         axis.text.x = element_text(size = 9, angle = 45, hjust = 1),
         axis.title = element_text(size = 10))
 ```
