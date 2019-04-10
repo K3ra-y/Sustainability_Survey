@@ -14,31 +14,23 @@ library(gridExtra)
 
 This survey aimed to answer the question *"Does a person’s frequency of recycling influence her/his opinion and attitudes towards the importance of sustainability?"*. The dataset columns description are as follows:
 
-  - `Q1_1`: How important is being environmentally sustainable to you on a scale from 1-10?
-  - `Q2`: How often do you generally recycle?
-  - `Q3`: What is your age group?
-  - `Q4`: Did you grow up in an environmentally-conscious family?
-  - `Q5`: Will you watch the video? 
-  - `Q6_1`: After watching this video about recycling, how important is sustainability to you on a self-ranked scale from 1-10 scale?
+  - `self_rating_before`: How important is being environmentally sustainable to you on a scale from 1-10?
+  - `recycling_freq`: How often do you generally recycle?
+  - `age`: What is your age group?
+  - `background`: Did you grow up in an environmentally-conscious family?
+  - `watch`: Will you watch the video?
+  - `self_rating_after`: After watching this video about recycling, how important is sustainability to you on a self-ranked scale from 1-10 scale?
 
 ### Load Data
 
 ```{r load data, warning=FALSE}
-# tidy data and assign correct data types
-tidy_data <- read_csv("../data/Sustainable Survey_April 4, 2019_18.11.csv", col_types = cols(.default = col_character()))[3:62,18:23]
-
-tidy_data <- tidy_data %>% 
-  mutate(Q1_1 = as.numeric(Q1_1),
-         Q2 = as.factor(Q2),
-         Q3 = as.factor(Q3),
-         Q4 = as.factor(Q4),
-         Q5 = as.factor(Q5),
-         Q6_1 = as.numeric(Q6_1))
+# load data
+tidy_data <- read.csv("../data/tidy_data.csv")
 
 # factor relevel
-tidy_data$Q2 <- tidy_data$Q2 %>% fct_relevel("Rarely","Sometimes","Usually","Always")
-tidy_data$Q4 <- tidy_data$Q4 %>% fct_relevel("Yes","No")
-tidy_data$Q5 <- tidy_data$Q5 %>% fct_relevel("Have watched","Will pass")
+tidy_data$recycling_freq <- tidy_data$recycling_freq %>% fct_relevel("Rarely","Sometimes","Usually","Always")
+tidy_data$background <- tidy_data$background %>% fct_relevel("Yes","No")
+tidy_data$watch <- tidy_data$watch %>% fct_relevel("Have watched","Will pass")
 ```
 
 
@@ -49,27 +41,27 @@ summary(tidy_data)
 
 > Analyzing the summary table, we noticed:
 >
-> **Q1_1: How important is being environmentally sustainable to you on a scale from 1-10?**: the average of the responses before watching the video was 7.8, with median 8.0.
+> **self_rating_before: How important is being environmentally sustainable to you on a scale from 1-10?**: the average of the responses before watching the video was 7.8, with median 8.0.
 >
-> **Q2: How often do you generally recycle?**: Most participants have a good recycling habit: 29 (48.3%) answered "Usually" and 27 (45%) answered "Always". Only 4 participants (6.7%) replied that they recycle "Sometimes" or "Rarely".
+> **recycling_freq: How often do you generally recycle?**: Most participants have a good recycling habit: 29 (48.3%) answered "Usually" and 27 (45%) answered "Always". Only 4 participants (6.7%) replied that they recycle "Sometimes" or "Rarely".
 >
-> **Q3: What is your age group?**: A total of 36 participants (60%) are from the younger groups, being 20-29 years old. We had a considerable number of people with 40+, but only 3 respondents (5%) are 35-39 years old.
+> **age: What is your age group?**: A total of 36 participants (60%) are from the younger groups, being 20-29 years old. We had a considerable number of people with 40+, but only 3 respondents (5%) are 35-39 years old.
 >
-> **Q4: Did you grow up in an environmentally-conscious family?**: 28 respondents (46.7%) replied that they grew up in an environmentally-conscious family.
+> **background: Did you grow up in an environmentally-conscious family?**: 28 respondents (46.7%) replied that they grew up in an environmentally-conscious family.
 >
-> **Q5: Will you watch the video?**: Only 38 respondents (63%) confirmed that they watched the video.
+> **watch: Will you watch the video?**: Only 38 respondents (63%) confirmed that they watched the video.
 >
-> **Q6_1: After watching this video about recycling, how important is sustainability to you on a self-ranked scale from 1-10 scale?**: The self rank about sustainability importance after watching the video had a slightly higher mean (8.1 vs. 7.8) and median (9 vs. 8) than the answers from the first question. However, some people who didn't watch the video answered the last question, since we had 15 respondents who said on Q5 that they'd skip the video, and only 9 participants answered NA to Q6_1. 
+> **self_rating_after: After watching this video about recycling, how important is sustainability to you on a self-ranked scale from 1-10 scale?**: The self rank about sustainability importance after watching the video had a slightly higher mean (8.1 vs. 7.8) and median (9 vs. 8) than the answers from the first question. However, some people who didn't watch the video answered the last question, since we had 15 respondents who said on watch that they'd skip the video, and only 9 participants answered NA to self_rating_after.
 
 ### Exploratory Data Analysis
 
 In order to explore our survey results and have a better understanding of how the variables impact the responses, we performed the following analysis:
 
 ```{r plot family vs. frequency}
-tidy_data %>% 
+tidy_data %>%
   ggplot() +
-  geom_bar(aes(x = Q2, fill = Q4)) +
-  facet_grid(~Q4) +
+  geom_bar(aes(x = recycling_freq, fill = background)) +
+  facet_grid(~background) +
   theme_bw() +
   labs(x = "How often do you recycle? ",
        title = "Recycling Freq. vs. Environmentally-Conscious Family") +
@@ -82,7 +74,7 @@ tidy_data %>%
 > As we can see from the above plot, most of our respondent have a good recycling habit whether or not they live in a environmentally-consicous family. However, if one respondent did not grow up in an environmentally-conscious family then he/she may not recycle at all.
 
 ```{R age distribution, warning = FALSE}
-ggplot(tidy_data, aes(Q3)) +
+ggplot(tidy_data, aes(age)) +
   geom_histogram(stat = "Count", fill = "#ff9999") +
   labs(x = "Age Group",
        title = "Distribution of Ages of Survey Respondents") +
@@ -90,11 +82,11 @@ ggplot(tidy_data, aes(Q3)) +
   theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
         axis.text = element_text(size = 12),
         axis.title = element_text(size = 13))
-  
+
 ```
 
 ```{r plot age group vs. sustainability importance before watching the video}
-qplot(tidy_data$Q3, tidy_data$Q1_1, geom ="boxplot") +
+qplot(tidy_data$age, tidy_data$self_rating_before, geom="boxplot") +
   ylim(0, 10) +
   theme_bw() +
   labs(x = "Age Group",
@@ -110,9 +102,10 @@ qplot(tidy_data$Q3, tidy_data$Q1_1, geom ="boxplot") +
 
 ```{r grouped bar, warning=FALSE}
 p1 <- tidy_data %>%
-  ggplot(aes(Q1_1)) +
+  filter(watch %in% 'Have watched') %>%
+  ggplot(aes(self_rating_before)) +
   geom_bar(fill = "cyan3", bins = 10) +
-  scale_x_continuous(breaks = c(1:10)) +
+  scale_x_continuous(breaks = c(1:10),limits=c(1, 11)) +
   ylim(0, 16) +
   labs(title = "Rating before watching the video", x = "Ratings") +
   theme_bw() +
@@ -121,8 +114,8 @@ p1 <- tidy_data %>%
         axis.title = element_text(size = 11))
 
 p2 <- tidy_data %>%
-  filter(Q5 %in% 'Have watched') %>%
-  ggplot(aes(Q6_1)) +
+  filter(watch %in% 'Have watched') %>%
+  ggplot(aes(self_rating_after)) +
   geom_bar(fill = "pink3" ,bins = 10) +
   scale_x_continuous(breaks = c(1:10),limits=c(1, 11)) +
   ylim(0, 16) +
@@ -139,9 +132,9 @@ grid.arrange(p1, p2, nrow = 1)
 
 ```{r plot self rank before and after watching the video for recycling frequency and age group}
 # self rank before and after watching the video for recycling frequency, for respondents who watched the video
-tidy_data %>% filter(Q5 %in% 'Have watched') %>% 
-  ggplot(aes(x = Q1_1, y = Q6_1, color = Q2), alpha = 0.5) +
-  geom_point(alpha = 0.5) +
+tidy_data %>% filter(watch %in% 'Have watched') %>%
+  ggplot(aes(x = self_rating_before, y = self_rating_after, color = recycling_freq), alpha = 0.5) +
+  geom_point() +
   labs(x = "Rating before watching the video",
        y = "Rating after watching the video",
        colour ="Recycling Frequency",
@@ -153,9 +146,9 @@ tidy_data %>% filter(Q5 %in% 'Have watched') %>%
   geom_abline(slope = 1, intercept = 0, linetype = 3)
 
 # self rank before and after watching the video for age group, for respondents who watched the video
-tidy_data %>% filter(Q5 %in% 'Have watched') %>% 
-  ggplot(aes(x = Q1_1, y = Q6_1, color = Q3)) +
-  geom_point(alpha = 0.5) +
+tidy_data %>% filter(watch %in% 'Have watched') %>%
+  ggplot(aes(x = self_rating_before, y = self_rating_after, color = age)) +
+  geom_point() +
   labs(x = "Rating before watching the video",
        y = "Rating after watching the video",
        colour ="Age Group",
@@ -170,17 +163,17 @@ tidy_data %>% filter(Q5 %in% 'Have watched') %>%
 > Looking only at the respondents who reported having watched the video, most of them changed their opinion on how sustainable they think they are in the positive direction, as evidenced by the higher number of points above the diagonal line. There was only one respondents who scored less after watching the video. Respondents who scored more after the watching the video are the ones who usually recycle. Respondents scores do not appear to be affected by age group. There may be other underlying confounding factors in which we did not capture in our data collection.
 
 ```{r}
-data_adj <- tidy_data %>% 
-  mutate(delta = Q6_1 - Q1_1) %>% 
+data_adj <- tidy_data %>%
+  mutate(delta = Q6_1 - Q1_1) %>%
   mutate(Q1_adj = (Q1_1 %/% 2 + Q1_1 %% 2), Q6_adj = Q6_1 %/% 2 + Q6_1 %% 2, delta_adj = Q6_adj - Q1_adj)
 
-(data_adj %>% 
-  filter(Q5 %in% 'Have watched') %>% 
+(data_adj %>%
+  filter(Q5 %in% 'Have watched') %>%
     arrange(delta))
 ```
 
 ```{r}
-# Filter the respondents who confirmed that watched the video and ranked theirselves 
+# Filter the respondents who confirmed that watched the video and ranked theirselves
 # with a lower score (considering the original responses, Q_1 and Q6_1) after that
 score_decr <- data_adj %>%  
   filter(Q5 %in% 'Have watched', delta < 0)
@@ -189,7 +182,7 @@ score_decr
 ```
 
 ```{r}
-# Filter the respondents who confirmed that watched the video and ranked theirselves 
+# Filter the respondents who confirmed that watched the video and ranked theirselves
 # with a higher score (considering the adjusted responses, Q_adj and Q6_adj) after that
 score_incr <- data_adj %>%  
   filter(Q5 %in% 'Have watched', delta_adj > 0)
@@ -210,4 +203,4 @@ qplot(tidy_data$Q2, tidy_data$Q1_1, geom = "boxplot") +
 ```
 
 
-> Analyzing the boxplots above is easy to notice that people who recycle more often consider sustainability more important than the ones who rarely reclycle, which suggests that the recycling frequency seems to influence a person's opinion about sustainability importance. 
+> Analyzing the boxplots above is easy to notice that people who recycle more often consider sustainability more important than the ones who rarely reclycle, which suggests that the recycling frequency seems to influence a person's opinion about sustainability importance.
