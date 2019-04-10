@@ -88,20 +88,20 @@ ggplot(tidy_data, aes(Q3)) +
        title = "Distribution of Ages of Survey Respondents") +
   theme_bw() +
   theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
-        axis.text = element_text(size = 13),
+        axis.text = element_text(size = 12),
         axis.title = element_text(size = 13))
   
 ```
 
 ```{r plot age group vs. sustainability importance before watching the video}
-qplot(tidy_data$Q3, tidy_data$Q1_1, geom="boxplot") +
+qplot(tidy_data$Q3, tidy_data$Q1_1, geom ="boxplot") +
   ylim(0, 10) +
   theme_bw() +
   labs(x = "Age Group",
        y = "Rating before watching the video") +
   ggtitle("Sustainability Importance vs. Age Group") +
   theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
-        axis.text = element_text(size = 13),
+        axis.text = element_text(size = 12),
         axis.title = element_text(size = 13))
 ```
 
@@ -141,7 +141,7 @@ grid.arrange(p1, p2, nrow = 1)
 # self rank before and after watching the video for recycling frequency, for respondents who watched the video
 tidy_data %>% filter(Q5 %in% 'Have watched') %>% 
   ggplot(aes(x = Q1_1, y = Q6_1, color = Q2), alpha = 0.5) +
-  geom_point() +
+  geom_point(alpha = 0.5) +
   labs(x = "Rating before watching the video",
        y = "Rating after watching the video",
        colour ="Recycling Frequency",
@@ -155,7 +155,7 @@ tidy_data %>% filter(Q5 %in% 'Have watched') %>%
 # self rank before and after watching the video for age group, for respondents who watched the video
 tidy_data %>% filter(Q5 %in% 'Have watched') %>% 
   ggplot(aes(x = Q1_1, y = Q6_1, color = Q3)) +
-  geom_point() +
+  geom_point(alpha = 0.5) +
   labs(x = "Rating before watching the video",
        y = "Rating after watching the video",
        colour ="Age Group",
@@ -168,3 +168,46 @@ tidy_data %>% filter(Q5 %in% 'Have watched') %>%
 ```
 
 > Looking only at the respondents who reported having watched the video, most of them changed their opinion on how sustainable they think they are in the positive direction, as evidenced by the higher number of points above the diagonal line. There was only one respondents who scored less after watching the video. Respondents who scored more after the watching the video are the ones who usually recycle. Respondents scores do not appear to be affected by age group. There may be other underlying confounding factors in which we did not capture in our data collection.
+
+```{r}
+data_adj <- tidy_data %>% 
+  mutate(delta = Q6_1 - Q1_1) %>% 
+  mutate(Q1_adj = (Q1_1 %/% 2 + Q1_1 %% 2), Q6_adj = Q6_1 %/% 2 + Q6_1 %% 2, delta_adj = Q6_adj - Q1_adj)
+
+(data_adj %>% 
+  filter(Q5 %in% 'Have watched') %>% 
+    arrange(delta))
+```
+
+```{r}
+# Filter the respondents who confirmed that watched the video and ranked theirselves 
+# with a lower score (considering the original responses, Q_1 and Q6_1) after that
+score_decr <- data_adj %>%  
+  filter(Q5 %in% 'Have watched', delta < 0)
+
+score_decr
+```
+
+```{r}
+# Filter the respondents who confirmed that watched the video and ranked theirselves 
+# with a higher score (considering the adjusted responses, Q_adj and Q6_adj) after that
+score_incr <- data_adj %>%  
+  filter(Q5 %in% 'Have watched', delta_adj > 0)
+
+score_incr
+```
+
+```{r plot recycling fre. vs. sustainability importance before watching the video}
+qplot(tidy_data$Q2, tidy_data$Q1_1, geom = "boxplot") +
+  ylim(0, 10) +
+  theme_bw() +
+  labs(x = "Recycling Frequency",
+       y = "Rating before watching the video") +
+  ggtitle("Sustainability Importance vs. Recycling Freq.") +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 13))
+```
+
+
+> Analyzing the boxplots above is easy to notice that people who recycle more often consider sustainability more important than the ones who rarely reclycle, which suggests that the recycling frequency seems to influence a person's opinion about sustainability importance. 
