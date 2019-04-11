@@ -1,0 +1,90 @@
+---
+title: "Milestone3_report"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(fig.path = "Milestone3/images_report/")
+library(tidyverse)
+library(gridExtra)
+```
+
+Wilson D., Marcelle C., Kera Y., Heather VT. 4/12/2019
+
+## Introduction and 0uestion
+
+This survey aimed to answer the question *"Does one's attitudes towards the importance of sustainability affect how often they recycle?"*. The dataset columns description are as follows:
+
+  - `self_rating_before`: How important is being environmentally sustainable to you on a scale from 1-10?
+  - `recycling_freq`: How often do you generally recycle?
+      - answer: Always, Usually, sometimes, rarely, never
+  - `age`: What is your age group?
+      - answers: <19, 20-24, 25-29, 30-34, 35-39, 40+
+  - `background`: Did you grow up in an environmentally-conscious family?
+        - answers: Yes, No
+  - `watch`: Will you watch the video?
+      -answers: Yes, No
+  - `self_rating_after`: After watching this video about recycling, how important is being  environmentally sustainable to you on a scale from 1-10?
+
+## Methods
+
+### Survey study design 
+
+### Data collection methods
+
+> Online survey with Qualtrics UBC
+
+> Wanted to 
+
+### Analysis methods
+
+## Results
+
+```{r load data, warning=FALSE}
+# load data
+tidy_data <- read.csv("../data/tidy_data.csv")
+
+# factor relevel
+tidy_data$recycling_freq <- tidy_data$recycling_freq %>% fct_relevel("Rarely","Sometimes","Usually","Always")
+tidy_data$background <- tidy_data$background %>% fct_relevel("Yes","No")
+tidy_data$watch <- tidy_data$watch %>% fct_relevel("Have watched","Will pass")
+```
+
+
+```{r summary table}
+# Creating summary table
+summary(tidy_data)
+```
+```{r}
+head(tidy_data)
+```
+```{r ANOVA to find confounders}
+simple_model= lm(data=tidy_data, recycling_freq ~ self_rating_before)
+age_confounder= lm(data=tidy_data, recycling_freq ~ self_rating_before + age)
+background_confounder= lm(data=tidy_data, recycling_freq ~ self_rating_before + background)
+interaction_effects = lm(data=tidy_data, recycling_freq ~ self_rating_before + background*age)
+
+summary(simple_model)
+```
+## Discussion 
+
+### Discussion of results
+
+### Discussion of survey/study design
+
+
+
+### NOTES for reference
+ >3-5 page report
+
+    > Your target audience is other Data Scientists who are not familiar with your project.
+    Clearly introduce the survey topic and question you were interested in answering.
+    Link to your study's data and code in the methods section of your report.
+    Include effective visualizations and/or tables that help communicate your findings.
+    Your discussion should have 2 key focuses:
+        Discussing the results and findings of your survey and analysis of the survey data.
+        Discussing your survey/study design, specifically:
+        what did you do well to make this study as causal as possible?
+        what was not done well and how did that effect your studies conclusions?
+        what would you do differently next time to improve your survey/study design and why?
