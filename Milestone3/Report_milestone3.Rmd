@@ -1,0 +1,61 @@
+---
+title: "Milestone3_report"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Wilson D., Marcelle C., Kera Y., Heather VT. 4/12/2019
+
+## Introduction and 0uestion
+
+This survey aimed to answer the question *"Does one's attitudes towards the importance of sustainability affect how often they recycle?"*. The dataset columns description are as follows:
+
+  - `self_rating_before`: How important is being environmentally sustainable to you on a scale from 1-10?
+  - `recycling_freq`: How often do you generally recycle?
+      - answer: Always, Usually, sometimes, rarely, never
+  - `age`: What is your age group?
+      - answers: <19, 20-24, 25-29, 30-34, 35-39, 40+
+  - `background`: Did you grow up in an environmentally-conscious family?
+        - answers: Yes, No
+  - `watch`: Will you watch the video?
+      -answers: Yes, No
+  - `self_rating_after`: After watching this video about recycling, how important is being  environmentally sustainable to you on a scale from 1-10?
+
+## Methods
+
+### Survey study design 
+
+### Data collection methods
+
+> Online survey with Qualtrics UBC
+
+> Wanted to 
+
+### Analysis methods
+
+## Results    
+
+## Discussion 
+
+### Discussion of results
+
+### Discussion of survey/study design
+
+
+
+### NOTES for reference
+ >3-5 page report
+
+    > Your target audience is other Data Scientists who are not familiar with your project.
+    Clearly introduce the survey topic and question you were interested in answering.
+    Link to your study's data and code in the methods section of your report.
+    Include effective visualizations and/or tables that help communicate your findings.
+    Your discussion should have 2 key focuses:
+        Discussing the results and findings of your survey and analysis of the survey data.
+        Discussing your survey/study design, specifically:
+        what did you do well to make this study as causal as possible?
+        what was not done well and how did that effect your studies conclusions?
+        what would you do differently next time to improve your survey/study design and why?
