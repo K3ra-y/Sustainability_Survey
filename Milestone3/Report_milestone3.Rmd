@@ -5,6 +5,9 @@ output: github_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(fig.path = "Milestone3/images_report/")
+library(tidyverse)
+library(gridExtra)
 ```
 
 Wilson D., Marcelle C., Kera Y., Heather VT. 4/12/2019
@@ -36,8 +39,34 @@ This survey aimed to answer the question *"Does one's attitudes towards the impo
 
 ### Analysis methods
 
-## Results    
+## Results
 
+```{r load data, warning=FALSE}
+# load data
+tidy_data <- read.csv("../data/tidy_data.csv")
+
+# factor relevel
+tidy_data$recycling_freq <- tidy_data$recycling_freq %>% fct_relevel("Rarely","Sometimes","Usually","Always")
+tidy_data$background <- tidy_data$background %>% fct_relevel("Yes","No")
+tidy_data$watch <- tidy_data$watch %>% fct_relevel("Have watched","Will pass")
+```
+
+
+```{r summary table}
+# Creating summary table
+summary(tidy_data)
+```
+```{r}
+head(tidy_data)
+```
+```{r ANOVA to find confounders}
+simple_model= lm(data=tidy_data, recycling_freq ~ self_rating_before)
+age_confounder= lm(data=tidy_data, recycling_freq ~ self_rating_before + age)
+background_confounder= lm(data=tidy_data, recycling_freq ~ self_rating_before + background)
+interaction_effects = lm(data=tidy_data, recycling_freq ~ self_rating_before + background*age)
+
+summary(simple_model)
+```
 ## Discussion 
 
 ### Discussion of results
