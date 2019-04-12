@@ -1,7 +1,7 @@
 Milestone 3
 ================
 Heather VT., Kera Y., Marcelle C., Wilson D.
-4/12/2019
+April 13th, 2019
 
 Introduction
 ------------
@@ -76,9 +76,9 @@ head(tidy_data)
     ## 6                 9
 
 ``` r
-#simple_model= lm(data=tidy_data, recycling_freq ~ self_rating_before)
-#age_confounder= lm(data=tidy_data, recycling_freq ~ self_rating_before + age)
-#background_confounder= lm(data=tidy_data, recycling_freq ~ self_rating_before + background)
+#simple_model = lm(data=tidy_data, recycling_freq ~ self_rating_before)
+#age_confounder = lm(data=tidy_data, recycling_freq ~ self_rating_before + age)
+#background_confounder = lm(data=tidy_data, recycling_freq ~ self_rating_before + background)
 #interaction_effects = lm(data=tidy_data, recycling_freq ~ self_rating_before + background*age)
 
 #summary(simple_model)

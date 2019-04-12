@@ -1,7 +1,7 @@
 ---
 title: "Milestone 3"
 author: "Heather VT., Kera Y., Marcelle C., Wilson D."
-date: "4/12/2019"
+date: "April 13th, 2019"
 output: github_document
 ---
 
@@ -53,12 +53,12 @@ head(tidy_data)
 ```
 
 ```{r ANOVA to find confounders}
-simple_model= lm(data=tidy_data, recycling_freq ~ self_rating_before)
-age_confounder= lm(data=tidy_data, recycling_freq ~ self_rating_before + age)
-background_confounder= lm(data=tidy_data, recycling_freq ~ self_rating_before + background)
-interaction_effects = lm(data=tidy_data, recycling_freq ~ self_rating_before + background*age)
+#simple_model = lm(data=tidy_data, recycling_freq ~ self_rating_before)
+#age_confounder = lm(data=tidy_data, recycling_freq ~ self_rating_before + age)
+#background_confounder = lm(data=tidy_data, recycling_freq ~ self_rating_before + background)
+#interaction_effects = lm(data=tidy_data, recycling_freq ~ self_rating_before + background*age)
 
-summary(simple_model)
+#summary(simple_model)
 ```
 ## Discussion 
 
