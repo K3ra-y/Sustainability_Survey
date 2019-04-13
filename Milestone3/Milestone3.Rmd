@@ -59,6 +59,33 @@ tidy_data$watch <- tidy_data$watch %>% fct_relevel("Have watched","Will pass")
 #summary(simple_model)
 ```
 
+```{r}
+lm_test <- lm(recycling_freq %>% as.numeric() ~ self_rating_before + background + age, data = tidy_data)
+
+lm_data <- tidy_data %>% 
+  mutate(recycling_freq_num = as.numeric(recycling_freq),
+         lm_fitted = lm_test %>% fitted(),
+         lm_resid = lm_test %>% resid())
+
+resid_plot <- lm_data %>% 
+  ggplot(aes(x= lm_fitted, y = lm_resid)) +
+  geom_point() +
+  labs(x="yhat", y="residual",title="Residual Plot") +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 13))
+
+qq_norm <- lm_data %>% 
+  ggplot(aes(sample= lm_resid)) +
+  stat_qq() +
+  labs(title="QQ Normality Plot") +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 13))
+
+grid.arrange(resid_plot,qq_norm,nrow=1)
+```
+
 We compiled the self-rated sustainability importance, recycling frequency, age and background information from 68 survey entries. Thus, to have a general idea of the relationship between self-rated sustainability importance and recycling frequency, we can analyze the following boxplots.
 
 ```{r visualization}

@@ -3,26 +3,32 @@ Milestone 3
 Heather VT., Kera Y., Marcelle C., Wilson D.
 April 13th, 2019
 
-Introduction
-------------
+## Introduction
 
-The current analysis seeks to explore the relationship between `self-rated sustainability importance` and `recycling frequency`. Additionally, the analysis also aims to determine whether this relationship is confounded by an `individual’s age` and `background (environmentally-conscious family)`, and analyze if a video about recycling changes individuals’ opinions on the importance of sustainability. With this purpose, we published a [survey](https://ubc.ca1.qualtrics.com/jfe/form/SV_4SJCJH59wUakrEF) using [UBC-hosted version of Qualtrics](https://ubc.ca1.qualtrics.com/) to collect responses to be used in this analysis.
+The current analysis seeks to explore the relationship between
+`self-rated sustainability importance` and `recycling frequency`.
+Additionally, the analysis also aims to determine whether this
+relationship is confounded by an `individual’s age` and `background
+(environmentally-conscious family)`, and analyze if a video about
+recycling changes individuals’ opinions on the importance of
+sustainability. With this purpose, we published a
+[survey](https://ubc.ca1.qualtrics.com/jfe/form/SV_4SJCJH59wUakrEF)
+using [UBC-hosted version of Qualtrics](https://ubc.ca1.qualtrics.com/)
+to collect responses to be used in this analysis.
 
-Methods
--------
+## Methods
 
 ### Survey study design
 
 ### Data collection methods
 
 > Online survey with Qualtrics UBC
->
+> 
 > Wanted to
 
 ### Analysis methods
 
-Results
--------
+## Results
 
 ``` r
 # load data
@@ -48,7 +54,41 @@ tidy_data$watch <- tidy_data$watch %>% fct_relevel("Have watched","Will pass")
 #summary(simple_model)
 ```
 
-We compiled the self-rated sustainability importance, recycling frequency, age and background information from 68 survey entries. Thus, to have a general idea of the relationship between self-rated sustainability importance and recycling frequency, we can analyze the following boxplots.
+``` r
+lm_test <- lm(recycling_freq %>% as.numeric() ~ self_rating_before + background + age, data = tidy_data)
+
+lm_data <- tidy_data %>% 
+  mutate(recycling_freq_num = as.numeric(recycling_freq),
+         lm_fitted = lm_test %>% fitted(),
+         lm_resid = lm_test %>% resid())
+
+resid_plot <- lm_data %>% 
+  ggplot(aes(x= lm_fitted, y = lm_resid)) +
+  geom_point() +
+  labs(x="yhat", y="residual",title="Residual Plot") +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 13))
+
+qq_norm <- lm_data %>% 
+  ggplot(aes(sample= lm_resid)) +
+  stat_qq() +
+  labs(title="QQ Normality Plot") +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 13))
+
+grid.arrange(resid_plot,qq_norm,nrow=1)
+```
+
+![](images_report/unnamed-chunk-1-1.png)<!-- -->
+
+We compiled the self-rated sustainability importance, recycling
+frequency, age and background information from 68 survey entries. Thus,
+to have a general idea of the relationship between self-rated
+sustainability importance and recycling frequency, we can analyze the
+following
+boxplots.
 
 ``` r
 # Visualization of relationship between recycling freq. and self rating before watching the video
@@ -66,11 +106,17 @@ tidy_data %>%
         axis.title = element_text(size = 13))
 ```
 
-![](images_report/visualization-1.png)
+![](images_report/visualization-1.png)<!-- -->
 
-Analyzing the boxplots above is easy to notice that people who recycle more often consider sustainability more important (having a higher self rating mean, and narrower range) than the ones who rarely reclycle, which suggests that a person's opinion about sustainability importance influences the recycling frequency.
+Analyzing the boxplots above is easy to notice that people who recycle
+more often consider sustainability more important (having a higher self
+rating mean, and narrower range) than the ones who rarely reclycle,
+which suggests that a person’s opinion about sustainability importance
+influences the recycling frequency.
 
-Thus, fitting an ordinal regression model considering self-rated sustainability importance before watching the video, individuals' age and background as predictors:
+Thus, fitting an ordinal regression model considering self-rated
+sustainability importance before watching the video, individuals’ age
+and background as predictors:
 
 ``` r
 # Fit a OLR model without interaction
@@ -81,7 +127,8 @@ tidy_data <- tidy_data %>%
   cbind(., olr_model_decision = predict(olr_model))                   #estimated result according to the probabilities
 ```
 
-Analyzing the goodness of fit, looking for AIC and likelihood, we obtained:
+Analyzing the goodness of fit, looking for AIC and likelihood, we
+obtained:
 
 ``` r
 gf <- table(tidy_data$recycling_freq, tidy_data$olr_model_decision)
@@ -127,12 +174,17 @@ coef(summary(olr_model))
 
 Interpreting the coefficients:
 
--   Example of slope interpretation: For `self_rating_before`, one unit increase in `self_rating_before`, there is a ~0.67 increase in the expected value of recycling frequency (in log odds scale), given that all of the other variables in the model are constant. A positive slope indicates a tendency for the response level to increase as the predictor increases.
+  - Example of slope interpretation: For `self_rating_before`, one unit
+    increase in `self_rating_before`, there is a ~0.67 increase in the
+    expected value of recycling frequency (in log odds scale), given
+    that all of the other variables in the model are constant. A
+    positive slope indicates a tendency for the response level to
+    increase as the predictor increases.
 
--   Example of intercept interpretation: ~5.49 is the expected log odds of recycle "usually" versus "always" when all the predictors are 0.
+  - Example of intercept interpretation: ~5.49 is the expected log odds
+    of recycle “usually” versus “always” when all the predictors are 0.
 
-Discussion
-----------
+## Discussion
 
 ### Discussion of results
 
@@ -140,7 +192,8 @@ Discussion
 
 ### NOTES for reference
 
-> 3-5 page report
+> 3-5 page
+    report
 
     > Your target audience is other Data Scientists who are not familiar with your project.
     Clearly introduce the survey topic and question you were interested in answering.
