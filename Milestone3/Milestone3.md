@@ -36,44 +36,8 @@ tidy_data$watch <- tidy_data$watch %>% fct_relevel("Have watched","Will pass")
 
 ``` r
 # Creating summary table
-summary(tidy_data)
+#summary(tidy_data)
 ```
-
-    ##  self_rating_before   recycling_freq    age     background
-    ##  Min.   : 1.000     Rarely   : 2     20-24:20   Yes:30    
-    ##  1st Qu.: 7.000     Sometimes: 2     25-29:19   No :38    
-    ##  Median : 8.000     Usually  :31     30-34:11             
-    ##  Mean   : 7.912     Always   :33     35-39: 3             
-    ##  3rd Qu.: 9.000                      40+  :15             
-    ##  Max.   :10.000                                           
-    ##                                                           
-    ##           watch    self_rating_after
-    ##  Have watched:46   Min.   : 1.000   
-    ##  Will pass   :15   1st Qu.: 7.500   
-    ##  NA's        : 7   Median : 9.000   
-    ##                    Mean   : 8.119   
-    ##                    3rd Qu.: 9.000   
-    ##                    Max.   :10.000   
-    ##                    NA's   :9
-
-``` r
-head(tidy_data)
-```
-
-    ##   self_rating_before recycling_freq   age background        watch
-    ## 1                  7        Usually 20-24        Yes         <NA>
-    ## 2                  1        Usually 30-34         No         <NA>
-    ## 3                  7        Usually 20-24         No Have watched
-    ## 4                  9         Always 30-34         No Have watched
-    ## 5                  3        Usually 20-24         No Have watched
-    ## 6                  9        Usually 25-29         No Have watched
-    ##   self_rating_after
-    ## 1                NA
-    ## 2                 6
-    ## 3                 9
-    ## 4                 9
-    ## 5                 3
-    ## 6                 9
 
 ``` r
 #simple_model = lm(data=tidy_data, recycling_freq ~ self_rating_before)
@@ -83,6 +47,89 @@ head(tidy_data)
 
 #summary(simple_model)
 ```
+
+We compiled the self-rated sustainability importance, recycling frequency, age and background information from 68 survey entries. Thus, to have a general idea of the relationship between self-rated sustainability importance and recycling frequency, we can analyze the following boxplots.
+
+``` r
+# Visualization of relationship between recycling freq. and self rating before watching the video
+tidy_data %>%
+  ggplot(aes(x = recycling_freq, y = self_rating_before)) +
+  geom_boxplot(size = .75) +
+  geom_jitter(alpha = .1, height = .2) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) +
+  coord_flip() +
+  theme_bw() +
+  labs(y = "Rating before watching the video", x = "Recycling Frequency") +
+  ggtitle("Sustainability Importance vs. Recycling Freq.") +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 13))
+```
+
+![](images_report/visualization-1.png)
+
+Analyzing the boxplots above is easy to notice that people who recycle more often consider sustainability more important (having a higher self rating mean, and narrower range) than the ones who rarely reclycle, which suggests that a person's opinion about sustainability importance influences the recycling frequency.
+
+Thus, fitting an ordinal regression model considering self-rated sustainability importance before watching the video, individuals' age and background as predictors:
+
+``` r
+# Fit a OLR model without interaction
+olr_model <- polr(recycling_freq ~ self_rating_before + background + age, data = tidy_data)
+
+tidy_data <- tidy_data %>%
+  cbind(., olr_model_prob = predict(olr_model, ., type = "probs")) %>% #estimated probability
+  cbind(., olr_model_decision = predict(olr_model))                   #estimated result according to the probabilities
+```
+
+Analyzing the goodness of fit, looking for AIC and likelihood, we obtained:
+
+``` r
+gf <- table(tidy_data$recycling_freq, tidy_data$olr_model_decision)
+accuracy <- (gf[1] + gf[6] + gf[11] + gf[16]) / 68 # 68 observations
+
+print(paste("AIC = ", AIC(olr_model))) 
+```
+
+    ## [1] "AIC =  115.158392854266"
+
+``` r
+print(paste("Log likelihood = ", logLik(olr_model))) 
+```
+
+    ## [1] "Log likelihood =  -48.5791964271329"
+
+``` r
+print(paste("Overall accuracy = ", accuracy)) # The larger the better
+```
+
+    ## [1] "Overall accuracy =  0.75"
+
+The values look nice, so now we can get the coefficients:
+
+``` r
+# Get the coefficients
+coef(summary(olr_model))
+```
+
+    ## 
+    ## Re-fitting to get Hessian
+
+    ##                         Value Std. Error    t value
+    ## self_rating_before  0.6730300  0.1722552  3.9071686
+    ## backgroundNo       -0.6121531  0.5838547 -1.0484681
+    ## age25-29            0.1367529  0.6936227  0.1971575
+    ## age30-34            1.0566521  0.8263358  1.2787200
+    ## age35-39           -1.1883473  1.2716763 -0.9344732
+    ## age40+              0.9466290  0.8470890  1.1175083
+    ## Rarely|Sometimes    0.5565850  1.3782016  0.4038488
+    ## Sometimes|Usually   1.4665515  1.2980113  1.1298449
+    ## Usually|Always      5.4871804  1.5288542  3.5890802
+
+Interpreting the coefficients:
+
+-   Example of slope interpretation: For `self_rating_before`, one unit increase in `self_rating_before`, there is a ~0.67 increase in the expected value of recycling frequency (in log odds scale), given that all of the other variables in the model are constant. A positive slope indicates a tendency for the response level to increase as the predictor increases.
+
+-   Example of intercept interpretation: ~5.49 is the expected log odds of recycle "usually" versus "always" when all the predictors are 0.
 
 Discussion
 ----------
