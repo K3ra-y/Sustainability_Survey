@@ -36,9 +36,7 @@ Additionally we gave an option for the participant to watch a short video and as
 
 Ordinal linear regression is performed to analyze relationship between `self-rated sustainability importance` and `recycling frequency`, as well as `age of the individual` and `background (environmentally-conscious family)`. 
 
-Assumptions of the Ordinal Linear regression are; (1) one predictor in the model (`recycling frequency`), (2) Each category has its own regression model, (3) No category has 0 count. 
-
-After fitting the additive model, we also explored multiplicative model to reveal the effects of confounding variables.
+Assumptions of the Ordinal Linear regression are; (1) one predictor in the model (`recycling frequency`), (2) Each category has its own regression model, (3) No category has 0 count. After fitting the additive model, we also explored multiplicative model to reveal the effects of confounding variables.
 
 
 ## Results
@@ -145,6 +143,20 @@ print(paste("AIC for OLR model with interaction = ", AIC(olr_model_interaction))
 print(paste("Log likelihood of OLR model with interaction = ", logLik(olr_model_interaction))) 
 print(paste("Overall accuracy of OLR model with interaction = ", accuracy)) # The larger the better
 ```
+
+We did not observe improvement in the model when interaction between background and age was added to the model. 
+
+```{r}
+summary(olr_model_interaction)
+# Get the coefficients
+exp(coef((olr_model_interaction)))
+```
+
+Interpretation of the multiplicative model:
+
+5.8 is the expected log odds of recycling frequency of usually versus always when all the predictors are 0.
+
+If a person rates themselves one unit more, the odds of increase in recycling from a lower frequency to a higher frequency is multiplied by 1.994.
 
 
 ## Discussion 

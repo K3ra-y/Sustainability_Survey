@@ -6,7 +6,7 @@ April 13th, 2019
 Introduction
 ------------
 
-The current analysis seeks to explore the relationship between `self-rated sustainability importance` and `recycling frequency`. Additionally, the analysis also aims to determine whether this relationship is confounded by an `individual’s age` and `background (environmentally-conscious family)`, and analyze if a video about recycling changes individuals’ opinions on the importance of sustainability. With this purpose, we published a [survey](https://ubc.ca1.qualtrics.com/jfe/form/SV_4SJCJH59wUakrEF) using [UBC-hosted version of Qualtrics](https://ubc.ca1.qualtrics.com/) to collect responses to be used in this analysis.
+The current analysis seeks to explore the relationship between `self-rated sustainability importance` and `recycling frequency`. Additionally, the analysis also aims to determine whether this relationship is confounded by an `age of the individual` and `background (environmentally-conscious family)`, and analyze if a video about recycling changes individuals opinions on the importance of sustainability. With this purpose, we published a [survey](https://ubc.ca1.qualtrics.com/jfe/form/SV_4SJCJH59wUakrEF) using [UBC-hosted version of Qualtrics](https://ubc.ca1.qualtrics.com/) to collect responses to be used in this analysis.
 
 Methods
 -------
@@ -16,10 +16,16 @@ Methods
 ### Data collection methods
 
 > Online survey with Qualtrics UBC
->
-> Wanted to
+
+Data was collected from participents who agreed to give consent to share their data in which was used to address our survey objective. Participants rated themselves in terms of how sustainable they think they are (main predictor). We also collected data on frequency of recycling habits, age of the participants and whether or not the participant was brought up in environmentally consious family. Our assumption is that the main response is frequency of recycling, and age and background is confounding factors.
+
+Additionally we gave an option for the participant to watch a short video and asked them to rate themselves based on change in self perseption towards sustainability.
 
 ### Analysis methods
+
+Ordinal linear regression is performed to analyze relationship between `self-rated sustainability importance` and `recycling frequency`, as well as `age of the individual` and `background (environmentally-conscious family)`.
+
+Assumptions of the Ordinal Linear regression are; (1) one predictor in the model (`recycling frequency`), (2) Each category has its own regression model, (3) No category has 0 count. After fitting the additive model, we also explored multiplicative model to reveal the effects of confounding variables.
 
 Results
 -------
@@ -68,7 +74,7 @@ tidy_data %>%
 
 ![](images_report/visualization-1.png)
 
-Analyzing the boxplots above is easy to notice that people who recycle more often consider sustainability more important (having a higher self rating mean, and narrower range) than the ones who rarely reclycle, which suggests that a person's opinion about sustainability importance influences the recycling frequency.
+Analyzing the boxplots above is easy to notice that people who recycle more often consider sustainability more important (having a higher self rating mean, and narrower range) than the ones who rarely recycle, which suggests that a person's opinion about sustainability importance influences the recycling frequency.
 
 Thus, fitting an ordinal regression model considering self-rated sustainability importance before watching the video, individuals' age and background as predictors:
 
@@ -130,6 +136,94 @@ Interpreting the coefficients:
 -   Example of slope interpretation: For `self_rating_before`, one unit increase in `self_rating_before`, there is a ~0.67 increase in the expected value of recycling frequency (in log odds scale), given that all of the other variables in the model are constant. A positive slope indicates a tendency for the response level to increase as the predictor increases.
 
 -   Example of intercept interpretation: ~5.49 is the expected log odds of recycle "usually" versus "always" when all the predictors are 0.
+
+Multiplicative effect of the counfounders are explored below:
+
+``` r
+# Fit a OLR model with interaction
+olr_model_interaction <- polr(recycling_freq ~ self_rating_before + background * age, data = tidy_data)
+
+tidy_data <- tidy_data %>%
+  cbind(., olr_model_prob2 = predict(olr_model_interaction, ., 
+                                    type = "probs")) %>% #estimated probability
+  cbind(., olr_model_decision2 = predict(olr_model_interaction))                   #estimated result according to the probabilities
+```
+
+``` r
+gf2 <- table(tidy_data$recycling_freq, tidy_data$olr_model_decision2)
+accuracy <- (gf2[1] + gf2[6] + gf2[11] + gf2[16]) / 68 # 68 observations
+
+print(paste("AIC for OLR model with interaction = ", AIC(olr_model_interaction))) 
+```
+
+    ## [1] "AIC for OLR model with interaction =  115.320868480606"
+
+``` r
+print(paste("Log likelihood of OLR model with interaction = ", logLik(olr_model_interaction))) 
+```
+
+    ## [1] "Log likelihood of OLR model with interaction =  -44.660434240303"
+
+``` r
+print(paste("Overall accuracy of OLR model with interaction = ", accuracy)) # The larger the better
+```
+
+    ## [1] "Overall accuracy of OLR model with interaction =  0.764705882352941"
+
+We did not observe improvement in the model when interaction between background and age was added to the model.
+
+``` r
+summary(olr_model_interaction)
+```
+
+    ## 
+    ## Re-fitting to get Hessian
+
+    ## Call:
+    ## polr(formula = recycling_freq ~ self_rating_before + background * 
+    ##     age, data = tidy_data)
+    ## 
+    ## Coefficients:
+    ##                          Value Std. Error    t value
+    ## self_rating_before      0.6900  1.798e-01  3.837e+00
+    ## backgroundNo           -0.1823  9.800e-01 -1.860e-01
+    ## age25-29                1.3266  1.067e+00  1.243e+00
+    ## age30-34                0.3358  1.196e+00  2.807e-01
+    ## age35-39               -2.5077  1.792e+00 -1.400e+00
+    ## age40+                 27.0208  5.071e-01  5.329e+01
+    ## backgroundNo:age25-29  -2.1224  1.471e+00 -1.443e+00
+    ## backgroundNo:age30-34   1.0666  1.658e+00  6.432e-01
+    ## backgroundNo:age35-39  14.1716  2.707e-05  5.235e+05
+    ## backgroundNo:age40+   -26.4871  5.071e-01 -5.223e+01
+    ## 
+    ## Intercepts:
+    ##                   Value       Std. Error  t value    
+    ## Rarely|Sometimes       0.5967      1.4872      0.4012
+    ## Sometimes|Usually      1.5747      1.4054      1.1205
+    ## Usually|Always         5.8336      1.6405      3.5560
+    ## 
+    ## Residual Deviance: 89.32087 
+    ## AIC: 115.3209
+
+``` r
+# Get the coefficients
+exp(coef((olr_model_interaction)))
+```
+
+    ##    self_rating_before          backgroundNo              age25-29 
+    ##          1.993751e+00          8.333499e-01          3.768372e+00 
+    ##              age30-34              age35-39                age40+ 
+    ##          1.398993e+00          8.145248e-02          5.432111e+11 
+    ## backgroundNo:age25-29 backgroundNo:age30-34 backgroundNo:age35-39 
+    ##          1.197465e-01          2.905514e+00          1.427799e+06 
+    ##   backgroundNo:age40+ 
+    ##          3.139044e-12
+
+Interpretation of the multiplicative model:
+
+5.8 is the expected log odds of recycling frequency of usually versus always when all the predictors are 0.
+
+If a person rates themselves one unit more, the odds of increase in recycling from a lower frequency to a higher frequency is multiplied by 1.994.
 
 Discussion
 ----------
