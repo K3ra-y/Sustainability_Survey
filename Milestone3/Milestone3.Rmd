@@ -7,9 +7,10 @@ output: github_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_chunk$set(fig.path = "Milestone3/images_report/")
+knitr::opts_chunk$set(fig.path = "images_report/")
 library(tidyverse)
 library(gridExtra)
+library(MASS)
 ```
 
 
@@ -45,8 +46,9 @@ tidy_data$watch <- tidy_data$watch %>% fct_relevel("Have watched","Will pass")
 
 ```{r summary table}
 # Creating summary table
-summary(tidy_data)
+#summary(tidy_data)
 ```
+
 
 ```{r make not a factor}
 # Changing recycling_freq to not be a factor for linear regression analysis.
@@ -58,10 +60,8 @@ tidy_data <- tidy_data %>%
                                      2, if_else(recycling_freq == "Never",
                                      1, 0)))))) 
 
-
-
-head(tidy_data)
 ```
+
 
 ```{r ANOVA to find confounders}
 simple_model= lm(data=tidy_data, recycling_freq_nf ~ self_rating_before)
@@ -84,6 +84,7 @@ anova(simple_model, age_confounder)
 #summary(background_confounder)
 anova(simple_model, background_confounder)
 ```
+
 > Background does not seem to be a significant factor in predicting recycling frequency.
 
 ```{R interaction fx?}
@@ -105,6 +106,89 @@ summary(all_variables)
 - 1) There are only two possible confounding variables: age, background. In the literature it appears that income is a significant predictor of recycling frequency, which we did not include in our survey. (Schultz et al. 1995)
 - 2) The strength of the (X,Y) association within each strata defined by the confounders is the same.
 - 3) There is a simple linear relationshing in how Y varies accross the strata.
+
+```{r}
+lm_test <- lm(recycling_freq %>% as.numeric() ~ self_rating_before + background + age, data = tidy_data)
+
+lm_data <- tidy_data %>% 
+  mutate(recycling_freq_num = as.numeric(recycling_freq),
+         lm_fitted = lm_test %>% fitted(),
+         lm_resid = lm_test %>% resid())
+
+resid_plot <- lm_data %>% 
+  ggplot(aes(x= lm_fitted, y = lm_resid)) +
+  geom_point() +
+  labs(x="yhat", y="residual",title="Residual Plot") +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 13))
+
+qq_norm <- lm_data %>% 
+  ggplot(aes(sample= lm_resid)) +
+  stat_qq() +
+  labs(title="QQ Normality Plot") +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 13))
+
+grid.arrange(resid_plot,qq_norm,nrow=1)
+```
+
+We compiled the self-rated sustainability importance, recycling frequency, age and background information from 68 survey entries. Thus, to have a general idea of the relationship between self-rated sustainability importance and recycling frequency, we can analyze the following boxplots.
+
+```{r visualization}
+# Visualization of relationship between recycling freq. and self rating before watching the video
+tidy_data %>%
+  ggplot(aes(x = recycling_freq, y = self_rating_before)) +
+  geom_boxplot(size = .75) +
+  geom_jitter(alpha = .1, height = .2) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) +
+  coord_flip() +
+  theme_bw() +
+  labs(y = "Rating before watching the video", x = "Recycling Frequency") +
+  ggtitle("Sustainability Importance vs. Recycling Freq.") +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 13))
+```
+
+Analyzing the boxplots above is easy to notice that people who recycle more often consider sustainability more important (having a higher self rating mean, and narrower range) than the ones who rarely reclycle, which suggests that a person's opinion about sustainability importance influences the recycling frequency. 
+
+Thus, fitting an ordinal regression model considering self-rated sustainability importance before watching the video, individuals' age and background as predictors:
+
+```{r olr model}
+# Fit a OLR model without interaction
+olr_model <- polr(recycling_freq ~ self_rating_before + background + age, data = tidy_data)
+
+tidy_data <- tidy_data %>%
+  cbind(., olr_model_prob = predict(olr_model, ., type = "probs")) %>% #estimated probability
+  cbind(., olr_model_decision = predict(olr_model))                   #estimated result according to the probabilities
+```
+
+Analyzing the goodness of fit, looking for AIC and likelihood, we obtained:
+
+```{r}
+gf <- table(tidy_data$recycling_freq, tidy_data$olr_model_decision)
+accuracy <- (gf[1] + gf[6] + gf[11] + gf[16]) / 68 # 68 observations
+
+print(paste("AIC = ", AIC(olr_model))) 
+print(paste("Log likelihood = ", logLik(olr_model))) 
+print(paste("Overall accuracy = ", accuracy)) # The larger the better
+```
+
+The values look nice, so now we can get the coefficients:
+
+```{r}
+# Get the coefficients
+coef(summary(olr_model))
+```
+
+Interpreting the coefficients:
+
+- Example of slope interpretation: For `self_rating_before`, one unit increase in `self_rating_before`, there is a ~0.67 increase in the expected value of recycling frequency (in log odds scale), given that all of the other variables in the model are constant. A positive slope indicates a tendency for the response level to increase as the predictor increases.
+
+- Example of intercept interpretation: ~5.49 is the expected log odds of recycle "usually" versus "always" when all the predictors are 0.
+
 
 ## Discussion 
 
