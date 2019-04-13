@@ -291,16 +291,17 @@ We found that self-rated opinion of the importance of environmental sustanabilit
 > There are other difficulties with self-reported survey data, such as reporting bias; We are aware that there is most-likely a positive inflation of respondent's recycling habits due to reporting bias. There may also be respondent bias, as we surveyed mostly our classmates and professors, and a few other university students. Nonetheless, we will assume that the vast majority of people who didn't respond would have responded in the same way as those who did. However, it should be noted that these conclusions may only generalize well to a similar demographic of people, such as those studying STEM subjects in University. In future studies, it would be interesting to include education and area of study as possible confounders. Another form of bias that we tried to avoid is researcher bias, which can happen when we let our own biases affect how we form the survey questions. This could affect the purity of the study. To avoid this, we asked a few classmates if the survey questions made sense and appeared un-biased, to gain some outside perspective.
 
 
-## Bonus analysis: Not enough x observations?
+## Bonus analysis:
 
 ```{R}
 tidy_data_ttest <- tidy_data %>%
   filter(watch %in% 'Have watched')
 
 
-#t.test(tidy_data$t.test$self_rating_before, tidy_data_ttest$self_rating_after, paired=TRUE)
-
+t.test(tidy_data_ttest$self_rating_before, tidy_data_ttest$self_rating_after, paired=TRUE)
 ```
+
+> We use a paired sample t-test compring the before/after self-rating of the participants who have watched the video. The p-value is 0.2613 which is not significant. Thus, we could not reject the null hypothesis which is watching viedeo have an effect on person's sustainability self-rating.
 
 ### References
 1) Schultz, P. W., Oskamp, S., & Mainieri, T. (1995). Who recycles and when? A review of personal and situational factors. Journal of Environmental Psychology, 15(2), 105-121. http://dx.doi.org/10.1016/0272-4944(95)90019-5.
