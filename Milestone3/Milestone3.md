@@ -6,55 +6,127 @@ April 13th, 2019
 Introduction
 ------------
 
-The current analysis seeks to explore the relationship between `self-rated sustainability importance` and `recycling frequency`. Additionally, the analysis also aims to determine whether this relationship is confounded by an `age of the individual` and `background (environmentally-conscious family)`, and analyze if a video about recycling changes individualsï¿½ï¿½ opinions on the importance of sustainability. With this purpose, we published a [survey](https://ubc.ca1.qualtrics.com/jfe/form/SV_4SJCJH59wUakrEF) using [UBC-hosted version of Qualtrics](https://ubc.ca1.qualtrics.com/) to collect responses to be used in this analysis.
+The current analysis seeks to explore the relationship between `self-rated sustainability importance` and `recycling frequency`. Additionally, the analysis also aims to determine whether this relationship is confounded by an `age of the individual` and `background (environmentally-conscious family)`, and analyze whether a video about personal sustainability impacts and changes influences one's opinions on the importance of sustainability. With this purpose, we published a [survey](https://ubc.ca1.qualtrics.com/jfe/form/SV_4SJCJH59wUakrEF) using [UBC-hosted version of Qualtrics](https://ubc.ca1.qualtrics.com/) to collect responses to be used in this analysis.
 
 Methods
 -------
 
 ### Survey study design
 
+We asked four questions, with one bonus question if participants decided to watch the video. Study participation consent was obtainened by listing the expectations of their involvement, purpose of the study and noting that participation is optional. All data will be stored by UBC qualtrics and no identifying information will be publically released. We designed the questions to allow us to answer our research question: How does one's opinion of the importance of being sustainable affect their recycling habits? We planned to test whether our data meets the assumptions of ordinary least squares linear regression, and ordinal regression, and then choose the model that our data does not violate the assumptions of. We added an additional question to assess if their opinion changed after watching a 2-minute [video](https://www.youtube.com/watch?v=Zsc8G0NnMTs) about personal habits that can change your climate impact.
+
+Q1: How important is being environmentally sustainable to you on a scale from 1-10? Q2: How often do you generally recycle? Q3: What is your age group? Q4: Did you grow up in an environmentally-conscious family? Q5: After watching [this video](https://www.youtube.com/watch?v=Zsc8G0NnMTs) about recycling, how important is sustainability to you on a self-ranked scale from 1-10 scale?
+
+Null hypothesis: There is no relationship between self-rated opinion of the importance of environmental sustainability, and the frequency of one's recycling behaviours.
+
+Alternate Hypothesis: There is a relationship between self-rated opinion of the importance of environmental sustainability and the frequency of one's recycling habits.
+
+Second analysis quesion: Does watchinga video significantly change one's opinions of the importance of being sustainable? Null hypothesis: Watching this video does not change one's self-rated importance of being sustainable. Alternate hypothesis: Watching this video doe change one's self-ratedd importance of being sustianable.
+
+We plan to analyze this additional question using a paired t-test.
+
 ### Data collection methods
 
-> Online survey with Qualtrics UBC
-
-Data was collected from participents who agreed to give consent to share their data in which was used to address our survey objective. Participants rated themselves in terms of how sustainable they think they are (main predictor). We also collected data on frequency of recycling habits, age of the participants and whether or not the participant was brought up in environmentally consious family. Our assumption is that the main response is frequency of recycling, and age and background is confounding factors.
-
-Additionally we gave an option for the participant to watch a short video and asked them to rate themselves based on change in self perseption towards sustainability.
+Data was collected through an online survey from participants who agreed to give consent to share their data to be used to address our survey objective. Participants rated themselves in terms of how important environmental sustainability is to them (main predictor). We also collected data on frequency of recycling habits, age of the participants and whether or not the participant was brought up in environmentally consious family. Our assumption is that the main response is frequency of recycling, and age and background are possible confounding factors. Data was then downloaded and stored on a private github repository, where it was cleaned and de-identified before publishing to the [public repository](https://github.com/UBC-MDS/Sustainability_Survey/tree/master/data).
 
 ### Analysis methods
 
-Ordinal linear regression is performed to analyze relationship between `self-rated sustainability importance` and `recycling frequency`, as well as `age of the individual` and `background (environmentally-conscious family)`.
+After some exploratory data analysis done in [Milestone 2](https://github.com/UBC-MDS/Sustainability_Survey/blob/master/Milestone2/Milestone2_EDA.md) we noticed that the ages were not evenly distributed (Figure 1). Therefore, we decided to regroup the ages from 30-39 into one age group.
 
-Assumptions of the Ordinal Linear regression are; (1) one predictor in the model (`recycling frequency`), (2) Each category has its own regression model, (3) No category has 0 count. After fitting the additive model, we also explored multiplicative model to reveal the effects of confounding variables.
+``` r
+head(tidy_data)
+```
+
+    ##   self_rating_before recycling_freq   age background        watch
+    ## 1                  7        Usually 20-24        Yes         <NA>
+    ## 2                  1        Usually 30-34         No         <NA>
+    ## 3                  7        Usually 20-24         No Have watched
+    ## 4                  9         Always 30-34         No Have watched
+    ## 5                  3        Usually 20-24         No Have watched
+    ## 6                  9        Usually 25-29         No Have watched
+    ##   self_rating_after recycling_freq_nf
+    ## 1                NA                 4
+    ## 2                 6                 4
+    ## 3                 9                 4
+    ## 4                 9                 5
+    ## 5                 3                 4
+    ## 6                 9                 4
+
+``` r
+tidy_data <- tidy_data %>%
+  mutate(age = if_else((age == "30-34" | age == "35-39"), "30-39", as.character(age)))
+```
+
+![](https://raw.githubusercontent.com/UBC-MDS/Sustainability_Survey/master/Milestone2/Milestone2_EDA_files/imgs/age%20distribution-1.png)
+
+> Figure 1: Age distribution of respondents
+
+``` r
+ggplot(tidy_data, aes(age)) +
+  geom_histogram(stat = "Count", fill = "#ff9999") +
+  labs(x = "Age Group",
+       title = "Distribution of Ages of Survey Respondents") +
+  theme_bw() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 13))
+```
+
+![](images_report/age%20distribution-1.png)
+
+> Figure 2: Redistribution of age categories.
+
+We first want to analyze whether our relationship has confounders.
+
+We then want to see if our data meets the assumptions of linear and/or ordinal regression.
+
+#### Important assumptions of the study:
+
+-   1.  There are only two possible confounding variables: age, background.
+
+-   1.  The strength of the (X,Y) association within each strata defined by the confounders is the same.
+
+-   1.  If we choose to do linear regression, there is a simple linear relationshing in how Y varies accross the strata. In order to do linear regression, we assume that all variables are multivariate normal. This must be tested by checking the residual and qqnorm plots. Linear regression also assumes that there is little or no multicollinearity in the data.
+
+-   1.  If we choose to do ordinal regression, the data must fit the proportional odds assumption that all categories are equally spaced.
+
+First, we check to see if all variables are multivariate normal. See Figure 3.
+
+``` r
+lm_test <- lm(recycling_freq %>% as.numeric() ~ self_rating_before + background + age, data = tidy_data)
+
+lm_data <- tidy_data %>%
+  mutate(recycling_freq_num = as.numeric(recycling_freq),
+         lm_fitted = lm_test %>% fitted(),
+         lm_resid = lm_test %>% resid())
+
+resid_plot <- lm_data %>%
+  ggplot(aes(x= lm_fitted, y = lm_resid)) +
+  geom_point() +
+  labs(x="yhat", y="residual",title="Residual Plot") +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 13))
+
+qq_norm <- lm_data %>%
+  ggplot(aes(sample= lm_resid)) +
+  stat_qq() +
+  labs(title="QQ Normality Plot") +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 13))
+
+grid.arrange(resid_plot,qq_norm,nrow=1)
+```
+
+![](images_report/unnamed-chunk-1-1.png) &gt; Figure 3: Residual and QQ-norm plot of residuals under linear model assumptions
+
+Since these plots show that the y variable is not normally distributed for each x, we will not be able to do linear regression. This is unfortunate because linear regression is easy to interpret. However, ordinal regression will allow more precision for each change in category of Y, and will allow us to capture the inherent order of the recycling categories. Thus, ordinal linear regression is performed to analyze the relationship between `self-rated sustainability importance` and `recycling frequency`, as well as `age of the individual` and `background (environmentally-conscious family)`.
+
+Assumptions of the Ordinal Linear regression are; (1) one predictor in the model (`recycling frequency`), (2) Each category has its own regression model, (3) No category has 0 count. After fitting the additive model, we also explored multiplicative model to understand whether there are any interaction effects.
 
 Results
 -------
-
-``` r
-# load data
-tidy_data <- read.csv("../data/tidy_data.csv")
-
-# factor relevel
-tidy_data$recycling_freq <- tidy_data$recycling_freq %>% fct_relevel("Rarely","Sometimes","Usually","Always")
-tidy_data$background <- tidy_data$background %>% fct_relevel("Yes","No")
-tidy_data$watch <- tidy_data$watch %>% fct_relevel("Have watched","Will pass")
-```
-
-``` r
-# Creating summary table
-#summary(tidy_data)
-```
-
-``` r
-# Changing recycling_freq to not be a factor for linear regression analysis.
-tidy_data <- tidy_data %>%
-  mutate(recycling_freq_nf = if_else(recycling_freq =="Always",
-                                     5, if_else(recycling_freq == "Usually",
-                                     4, if_else(recycling_freq == "Sometimes",
-                                     3, if_else(recycling_freq == "Rarely",
-                                     2, if_else(recycling_freq == "Never",
-                                     1, 0))))))
-```
 
 ``` r
 simple_model= lm(data=tidy_data, recycling_freq_nf ~ self_rating_before)
@@ -86,71 +158,7 @@ summary(simple_model)
 
 > The simple model with just X and Y has a significant F-statistic, meaning we can reject the null hypothesis that there is no effect of X on Y.
 
-> In order to understand if there are confounding variable though, we need to take a closer look and compare the simple linear model with the linear models that include confounding variables.
-
-``` r
-anova(simple_model, age_confounder)
-```
-
-    ## Analysis of Variance Table
-    ## 
-    ## Model 1: recycling_freq_nf ~ self_rating_before
-    ## Model 2: recycling_freq_nf ~ self_rating_before + age
-    ##   Res.Df    RSS Df Sum of Sq      F Pr(>F)
-    ## 1     66 23.988                           
-    ## 2     62 23.122  4   0.86641 0.5808 0.6776
-
-> Age does not seem to be a significant factor in predicting recycling frequency. p-value&gt;0.05
-
-``` r
-#summary(background_confounder)
-anova(simple_model, background_confounder)
-```
-
-    ## Analysis of Variance Table
-    ## 
-    ## Model 1: recycling_freq_nf ~ self_rating_before
-    ## Model 2: recycling_freq_nf ~ self_rating_before + background
-    ##   Res.Df    RSS Df Sum of Sq      F Pr(>F)
-    ## 1     66 23.988                           
-    ## 2     65 23.740  1   0.24781 0.6785 0.4131
-
-> Background does not seem to be a significant factor in predicting recycling frequency.
-
-``` r
-summary(interaction_effects)
-```
-
-    ## 
-    ## Call:
-    ## lm(formula = recycling_freq_nf ~ self_rating_before + background * 
-    ##     age, data = tidy_data)
-    ## 
-    ## Residuals:
-    ##     Min      1Q  Median      3Q     Max 
-    ## -2.6688 -0.2381  0.0000  0.4487  0.8766 
-    ## 
-    ## Coefficients:
-    ##                       Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)            3.04157    0.38662   7.867 1.14e-10 ***
-    ## self_rating_before     0.16838    0.04224   3.986 0.000193 ***
-    ## backgroundNo          -0.01232    0.27866  -0.044 0.964892    
-    ## age25-29               0.29954    0.27690   1.082 0.283919    
-    ## age30-34               0.11140    0.34913   0.319 0.750840    
-    ## age35-39              -0.55698    0.46310  -1.203 0.234056    
-    ## age40+                 0.27464    0.35755   0.768 0.445587    
-    ## backgroundNo:age25-29 -0.55243    0.39379  -1.403 0.166085    
-    ## backgroundNo:age30-34  0.20402    0.46885   0.435 0.665102    
-    ## backgroundNo:age35-39  0.84394    0.79435   1.062 0.292523    
-    ## backgroundNo:age40+   -0.31883    0.44832  -0.711 0.479872    
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## 
-    ## Residual standard error: 0.6046 on 57 degrees of freedom
-    ## Multiple R-squared:  0.3545, Adjusted R-squared:  0.2413 
-    ## F-statistic: 3.131 on 10 and 57 DF,  p-value: 0.002997
-
-> There are no interaction effects, so we can just look at the single variables as potential confounders... (better explanation needed)
+> In order to understand if there are any confounding variables though, we need to take a closer look and compare the simple full model with the interaction model that include confounding variables.
 
 ``` r
 all_variables= lm(data=tidy_data, recycling_freq_nf ~ self_rating_before + background + age)
@@ -165,64 +173,26 @@ summary(all_variables)
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -2.7215 -0.2918  0.1179  0.4111  0.8872 
+    ## -2.7171 -0.2977  0.1394  0.3962  0.8692 
     ## 
     ## Coefficients:
-    ##                    Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)         3.04086    0.37623   8.083 3.17e-11 ***
-    ## self_rating_before  0.17607    0.04237   4.156 0.000103 ***
-    ## backgroundNo       -0.16052    0.15897  -1.010 0.316589    
-    ## age25-29            0.01157    0.19888   0.058 0.953785    
-    ## age30-34            0.27821    0.23211   1.199 0.235306    
-    ## age35-39           -0.29734    0.38331  -0.776 0.440912    
-    ## age40+              0.08049    0.22470   0.358 0.721438    
+    ##                     Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)         3.108770   0.376207   8.263 1.38e-11 ***
+    ## self_rating_before  0.166487   0.042164   3.949 0.000204 ***
+    ## backgroundNo       -0.143422   0.159799  -0.898 0.372915    
+    ## age25-29            0.001856   0.200379   0.009 0.992640    
+    ## age30-39            0.153181   0.216479   0.708 0.481843    
+    ## age40+              0.086924   0.226483   0.384 0.702441    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 0.6106 on 61 degrees of freedom
-    ## Multiple R-squared:  0.2955, Adjusted R-squared:  0.2262 
-    ## F-statistic: 4.264 on 6 and 61 DF,  p-value: 0.001192
+    ## Residual standard error: 0.6156 on 62 degrees of freedom
+    ## Multiple R-squared:  0.2722, Adjusted R-squared:  0.2135 
+    ## F-statistic: 4.638 on 5 and 62 DF,  p-value: 0.001166
 
 > Including all predictive variables in the model shows that on average, for each unit increase in X, there is a 0.176 increase in y. This means that for every increase in self-importance of sustainability rating there is a 0.17 increase in frequency of recycling. The p-value is 0.000103, which is significant with an alpha of 0.05. Therefore, we can reject the null hypothesis and say that there is a positive relationship between self-rated importance of being sustianable and one's frequency of recycling.
 
-#### Important assumptions:
-
--   1.  There are only two possible confounding variables: age, background. In the literature it appears that income is a significant predictor of recycling frequency, which we did not include in our survey. (Schultz et al. 1995)
-
--   1.  The strength of the (X,Y) association within each strata defined by the confounders is the same.
-
--   1.  There is a simple linear relationshing in how Y varies accross the strata.
-
-``` r
-lm_test <- lm(recycling_freq %>% as.numeric() ~ self_rating_before + background + age, data = tidy_data)
-
-lm_data <- tidy_data %>%
-  mutate(recycling_freq_num = as.numeric(recycling_freq),
-         lm_fitted = lm_test %>% fitted(),
-         lm_resid = lm_test %>% resid())
-
-resid_plot <- lm_data %>%
-  ggplot(aes(x= lm_fitted, y = lm_resid)) +
-  geom_point() +
-  labs(x="yhat", y="residual",title="Residual Plot") +
-  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
-        axis.text = element_text(size = 12),
-        axis.title = element_text(size = 13))
-
-qq_norm <- lm_data %>%
-  ggplot(aes(sample= lm_resid)) +
-  stat_qq() +
-  labs(title="QQ Normality Plot") +
-  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
-        axis.text = element_text(size = 12),
-        axis.title = element_text(size = 13))
-
-grid.arrange(resid_plot,qq_norm,nrow=1)
-```
-
-![](images_report/unnamed-chunk-1-1.png)
-
-We compiled the self-rated sustainability importance, recycling frequency, age and background information from 68 survey entries. Thus, to have a general idea of the relationship between self-rated sustainability importance and recycling frequency, we can analyze the following boxplots.
+We compiled the self-rated sustainability importance, recycling frequency, age and background information from 68 survey respondents. A general idea of the relationship between self-rated sustainability importance and recycling frequency can be shown by the following boxplots (Figure 4).
 
 ``` r
 # Visualization of relationship between recycling freq. and self rating before watching the video
@@ -240,11 +210,11 @@ tidy_data %>%
         axis.title = element_text(size = 13))
 ```
 
-![](images_report/visualization-1.png)
+![](images_report/visualization-1.png) *Figure 4: Sustainability importance vs. Recycling Frequency*
 
-Analyzing the boxplots above is easy to notice that people who recycle more often consider sustainability more important (having a higher self rating mean, and narrower range) than the ones who rarely recycle, which suggests that a person's opinion about sustainability importance influences the recycling frequency.
+Looking at the boxplots if figure 2, it is easy to notice that people who recycle more often consider sustainability more important (having a higher self-rated mean, and narrower range) than those who rarely recycle, which suggests that a person's opinion about sustainability importance influences the recycling frequency.
 
-Thus, fitting an ordinal regression model considering self-rated sustainability importance before watching the video, individuals' age and background as predictors:
+Thus, fitting an ordinal regression model considering self-rated importance of sustainability before watching the video, individuals' age and background as predictors:
 
 ``` r
 # Fit a OLR model without interaction
@@ -264,46 +234,74 @@ accuracy <- (gf[1] + gf[6] + gf[11] + gf[16]) / 68 # 68 observations
 print(paste("AIC = ", AIC(olr_model)))
 ```
 
-    ## [1] "AIC =  115.158392854266"
+    ## [1] "AIC =  115.911780418842"
 
 ``` r
 print(paste("Log likelihood = ", logLik(olr_model)))
 ```
 
-    ## [1] "Log likelihood =  -48.5791964271329"
+    ## [1] "Log likelihood =  -49.9558902094209"
 
 ``` r
 print(paste("Overall accuracy = ", accuracy)) # The larger the better
 ```
 
-    ## [1] "Overall accuracy =  0.75"
+    ## [1] "Overall accuracy =  0.661764705882353"
 
 The values look nice, so now we can get the coefficients:
 
 ``` r
 # Get the coefficients
-coef(summary(olr_model))
+summary(olr_model)
 ```
 
     ## 
     ## Re-fitting to get Hessian
 
-    ##                         Value Std. Error    t value
-    ## self_rating_before  0.6730300  0.1722552  3.9071686
-    ## backgroundNo       -0.6121531  0.5838547 -1.0484681
-    ## age25-29            0.1367529  0.6936227  0.1971575
-    ## age30-34            1.0566521  0.8263358  1.2787200
-    ## age35-39           -1.1883473  1.2716763 -0.9344732
-    ## age40+              0.9466290  0.8470890  1.1175083
-    ## Rarely|Sometimes    0.5565850  1.3782016  0.4038488
-    ## Sometimes|Usually   1.4665515  1.2980113  1.1298449
-    ## Usually|Always      5.4871804  1.5288542  3.5890802
+    ## Call:
+    ## polr(formula = recycling_freq ~ self_rating_before + background + 
+    ##     age, data = tidy_data)
+    ## 
+    ## Coefficients:
+    ##                       Value Std. Error t value
+    ## self_rating_before  0.61882     0.1661  3.7254
+    ## backgroundNo       -0.51116     0.5683 -0.8995
+    ## age25-29            0.09463     0.6829  0.1386
+    ## age30-39            0.52693     0.7355  0.7164
+    ## age40+              0.93777     0.8340  1.1244
+    ## 
+    ## Intercepts:
+    ##                   Value   Std. Error t value
+    ## Rarely|Sometimes   0.2980  1.3518     0.2204
+    ## Sometimes|Usually  1.1814  1.2742     0.9272
+    ## Usually|Always     5.0900  1.4830     3.4322
+    ## 
+    ## Residual Deviance: 99.91178 
+    ## AIC: 115.9118
+
+``` r
+exp(coef(olr_model))
+```
+
+    ## self_rating_before       backgroundNo           age25-29 
+    ##          1.8567319          0.5997996          1.0992467 
+    ##           age30-39             age40+ 
+    ##          1.6937258          2.5542798
 
 Interpreting the coefficients:
 
--   Example of slope interpretation: For `self_rating_before`, one unit increase in `self_rating_before`, there is a ~0.67 increase in the expected value of recycling frequency (in log odds scale), given that all of the other variables in the model are constant. A positive slope indicates a tendency for the response level to increase as the predictor increases.
+-   Example of slope interpretation: For `self_rating_before`, one unit increase in `self_rating_before`, there is a ~0.67 increase in the expected value of recycling frequency (in log odds scale), given that all of the other variables in the model are constant. We can also calculate the 95% confidence interval given the estimate's standard error. Another way to interpret this estimate is that we can be 95% confident that on average, a one-unit increase in one's self-rating means that there is somewhere between a 1.4- 2.7 increased odds of recycling more frequently. A positive value indicates a positive increase in the odds of the next response category as the predictor increases by one unit.
 
--   Example of intercept interpretation: ~5.49 is the expected log odds of recycle "usually" versus "always" when all the predictors are 0.
+-   Example of estimate interpretation: ~5.49 is the expected log odds of recycle "usually" versus "always" when all the predictors are 0.
+-   If a person rates themselves one unit higher, the odds of increase in recycling from a lower frequency to a higher frequency is multiplied by 1.96.
+
+``` r
+upper_CI = exp(0.6730300 + 1.96*0.1722552)
+lower_CI = exp(0.6730300 - 1.96*0.1722552)
+print(paste("95% CI for non-interaction model= ", lower_CI, upper_CI))
+```
+
+    ## [1] "95% CI for non-interaction model=  1.39851338977876 2.74738676330879"
 
 Multiplicative effect of the confounders are explored below:
 
@@ -324,81 +322,69 @@ accuracy <- (gf2[1] + gf2[6] + gf2[11] + gf2[16]) / 68 # 68 observations
 print(paste("AIC for OLR model with interaction = ", AIC(olr_model_interaction)))
 ```
 
-    ## [1] "AIC for OLR model with interaction =  115.320868480606"
+    ## [1] "AIC for OLR model with interaction =  113.819560665681"
 
 ``` r
 print(paste("Log likelihood of OLR model with interaction = ", logLik(olr_model_interaction)))
 ```
 
-    ## [1] "Log likelihood of OLR model with interaction =  -44.660434240303"
+    ## [1] "Log likelihood of OLR model with interaction =  -45.9097803328404"
 
 ``` r
 print(paste("Overall accuracy of OLR model with interaction = ", accuracy)) # The larger the better
 ```
 
-    ## [1] "Overall accuracy of OLR model with interaction =  0.764705882352941"
+    ## [1] "Overall accuracy of OLR model with interaction =  0.779411764705882"
 
-We did not observe improvement in the model when interaction between background and age was added to the model.
+To compare the two models we can do a likelihood ratio test:
 
 ``` r
-summary(olr_model_interaction)
+anova(olr_model, olr_model_interaction)
 ```
 
+    ## Likelihood ratio tests of ordinal regression models
     ## 
-    ## Re-fitting to get Hessian
+    ## Response: recycling_freq
+    ##                                   Model Resid. df Resid. Dev   Test    Df
+    ## 1 self_rating_before + background + age        60   99.91178             
+    ## 2 self_rating_before + background * age        57   91.81956 1 vs 2     3
+    ##   LR stat.    Pr(Chi)
+    ## 1                    
+    ## 2  8.09222 0.04414376
 
-    ## Call:
-    ## polr(formula = recycling_freq ~ self_rating_before + background * 
-    ##     age, data = tidy_data)
-    ## 
-    ## Coefficients:
-    ##                          Value Std. Error    t value
-    ## self_rating_before      0.6900  1.798e-01  3.837e+00
-    ## backgroundNo           -0.1823  9.800e-01 -1.860e-01
-    ## age25-29                1.3266  1.067e+00  1.243e+00
-    ## age30-34                0.3358  1.196e+00  2.807e-01
-    ## age35-39               -2.5077  1.792e+00 -1.400e+00
-    ## age40+                 27.0208  5.071e-01  5.329e+01
-    ## backgroundNo:age25-29  -2.1224  1.471e+00 -1.443e+00
-    ## backgroundNo:age30-34   1.0666  1.658e+00  6.432e-01
-    ## backgroundNo:age35-39  14.1716  2.707e-05  5.235e+05
-    ## backgroundNo:age40+   -26.4871  5.071e-01 -5.223e+01
-    ## 
-    ## Intercepts:
-    ##                   Value       Std. Error  t value    
-    ## Rarely|Sometimes       0.5967      1.4872      0.4012
-    ## Sometimes|Usually      1.5747      1.4054      1.1205
-    ## Usually|Always         5.8336      1.6405      3.5560
-    ## 
-    ## Residual Deviance: 89.32087 
-    ## AIC: 115.3209
+This ANOVA test shows that we did not observe a significant difference in the model when interaction between background and age was added to the model. Thus, we will use only the simple model without interaction to explain our findings.
 
 ``` r
+#summary(olr_model_interaction)
 # Get the coefficients
-exp(coef((olr_model_interaction)))
+# exp(coef((olr_model_interaction)))
 ```
-
-    ##    self_rating_before          backgroundNo              age25-29 
-    ##          1.993751e+00          8.333499e-01          3.768372e+00 
-    ##              age30-34              age35-39                age40+ 
-    ##          1.398993e+00          8.145248e-02          5.432111e+11 
-    ## backgroundNo:age25-29 backgroundNo:age30-34 backgroundNo:age35-39 
-    ##          1.197465e-01          2.905514e+00          1.427799e+06 
-    ##   backgroundNo:age40+ 
-    ##          3.139044e-12
-
-Interpretation of the multiplicative model:
-
-5.8 is the expected log odds of recycling frequency of usually versus always when all the predictors are 0.
-
-If a person rates themselves one unit more, the odds of increase in recycling from a lower frequency to a higher frequency is multiplied by 1.994.
 
 Discussion
 ----------
 
+We found that self-rated opinion of the importance of environmental sustanability is a significant predictor of recyling frequency behaviours. In our study we did not find age or family values to be significant confounders. Interestingly, in the literature it appears that income is a significant predictor of recycling frequency, which we did not include in our survey (Schultz et al. 1995).
+
 ### Discussion of results
 
+> The main assumption of ordinal regression is that each predicted category is evenly spaced. We are assuming that this is true, as it is plausible that the difference between each recycling category is equally different to people taking our survey. Of course, it is possible to validate this assumption as we can not read people's minds to make sure that they understand the differences between each category and perceive them as evenly spaced.
+
 ### Discussion of survey/study design
+
+> To make this study as causal as possible we designed our questions to have a reasonable number of categories for ordinal regression analysis, and included questions that would allow us to reasonably accurately assess whether there were any confounding variables that might be affecting our hypothesized relationship. This study designed allowed us to easily make conclusions about each category of recycling frequency.
+
+> There are other difficulties with self-reported survey data, such as reporting bias; We are aware that there is most-likely a positive inflation of respondent's recycling habits due to reporting bias. There may also be respondent bias, as we surveyed mostly our classmates and professors, and a few other university students. Nonetheless, we will assume that the vast majority of people who didn't respond would have responded in the same way as those who did. However, it should be noted that these conclusions may only generalize well to a similar demographic of people, such as those studying STEM subjects in University. In future studies, it would be interesting to include education and area of study as possible confounders. Another form of bias that we tried to avoid is researcher bias, which can happen when we let our own biases affect how we form the survey questions. This could affect the purity of the study. To avoid this, we asked a few classmates if the survey questions made sense and appeared un-biased, to gain some outside perspective.
+
+Bonus analysis: Not enough x observations?
+------------------------------------------
+
+``` r
+tidy_data_ttest <- tidy_data %>%
+  filter(watch %in% 'Have watched')
+
+
+#t.test(tidy_data$t.test$self_rating_before, tidy_data_ttest$self_rating_after, paired=TRUE)
+```
 
 ### References
 
