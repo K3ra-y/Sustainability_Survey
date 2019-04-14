@@ -17,7 +17,7 @@ library(MASS)
 
 ## Introduction
 
-The current analysis seeks to explore the relationship between `self-rated sustainability importance` and `recycling frequency`. Additionally, the analysis also aims to determine whether this relationship is confounded by an `age of the individual` and/or `background (environmentally-conscious family)`, and analyze whether a video about personal sustainability impacts and changes influences one's opinions on the importance of sustainability. With this purpose, we published a [survey](https://ubc.ca1.qualtrics.com/jfe/form/SV_4SJCJH59wUakrEF) using [UBC-hosted version of Qualtrics](https://ubc.ca1.qualtrics.com/) to collect responses to be used in this analysis.
+The current analysis seeks to explore the relationship between `self-rated sustainability importance` and `recycling frequency`. Additionally, the analysis also aims to determine whether this relationship is confounded by an `age of the individual` and `background (environmentally-conscious family)`, and analyze whether a video about personal sustainability influences one's opinions on the importance of sustainability. With this purpose, we published a [survey](https://ubc.ca1.qualtrics.com/jfe/form/SV_4SJCJH59wUakrEF) using [UBC-hosted version of Qualtrics](https://ubc.ca1.qualtrics.com/) to collect responses to be used in this analysis.
 
 ## Methods
 
@@ -25,19 +25,25 @@ The current analysis seeks to explore the relationship between `self-rated susta
 
 We asked four questions, with one bonus question if participants decided to watch the video. Study participation consent was obtainened by listing the expectations of their involvement, purpose of the study and noting that participation is optional. All data will be stored by UBC qualtrics and no identifying information will be publically released. We designed the questions to allow us to answer our research question: How does one's opinion of the importance of being sustainable affect their recycling habits? We planned to test whether our data meets the assumptions of ordinary least squares linear regression, and ordinal regression, and then choose the model that our data does not violate the assumptions of. We added an additional question to assess if their opinion changed after watching a 2-minute [video](https://www.youtube.com/watch?v=Zsc8G0NnMTs) about personal habits that can change your climate impact.
 
-Q1: How important is being environmentally sustainable to you on a scale from 1-10?
-Q2: How often do you generally recycle? 
-Q3: What is your age group?
-Q4: Did you grow up in an environmentally-conscious family?
-Q5: After watching [this video](https://www.youtube.com/watch?v=Zsc8G0NnMTs) about recycling, how important is sustainability to you on a self-ranked scale from 1-10 scale?
+**Q1:** How important is being environmentally sustainable to you on a scale from 1-10?
 
-Null hypothesis: There is no relationship between self-rated opinion of the importance of environmental sustainability, and the frequency of one's recycling behaviours.
+**Q2:** How often do you generally recycle? 
 
-Alternate Hypothesis: There is a relationship between self-rated opinion of the importance of environmental sustainability and the frequency of one's recycling habits.
+**Q3:** What is your age group?
 
-Second analysis quesion: Does watchinga video significantly change one's opinions of the importance of being sustainable?
-Null hypothesis: Watching this video does not change one's self-rated importance of being sustainable.
-Alternate hypothesis: Watching this video doe change one's self-ratedd importance of being sustianable.
+**Q4:** Did you grow up in an environmentally-conscious family?
+
+**Q5:** After watching [this video](https://www.youtube.com/watch?v=Zsc8G0NnMTs) about recycling, how important is sustainability to you on a self-ranked scale from 1-10 scale?
+
+**Null hypothesis:** There is no relationship between self-rated opinion of the importance of environmental sustainability, and the frequency of one's recycling behaviours.
+
+**Alternate Hypothesis:** There is a relationship between self-rated opinion of the importance of environmental sustainability and the frequency of one's recycling habits.
+
+**Second analysis question:** Does watchinga video significantly change one's opinions of the importance of being sustainable?
+
+**Null hypothesis:** Watching this video does not change one's self-rated importance of being sustainable.
+
+**Alternate hypothesis:** Watching this video doe change one's self-ratedd importance of being sustianable.
 
 We plan to analyze this additional question using a paired t-test.
 
@@ -105,10 +111,10 @@ We then want to see if our data meets the assumptions of linear and/or ordinal r
 
 #### Important assumptions of the study:
 
-- 1) There are only two possible confounding variables: age, background. 
-- 2) The strength of the (X,Y) association within each strata defined by the confounders is the same.
-- 3) If we choose to do linear regression, there is a simple linear relationshing in how Y varies accross the strata. In order to do linear regression, we assume that all variables are multivariate normal. This must be tested by checking the residual and qqnorm plots. Linear regression also assumes that there is little or no multicollinearity in the data.
-- 4) If we choose to do ordinal regression, the data must fit the proportional odds assumption that all categories are equally spaced.
+1) There are only two possible confounding variables: age, background. 
+2) The strength of the (X,Y) association within each strata defined by the confounders is the same.
+3) If we choose to do linear regression, there is a simple linear relationshing in how Y varies accross the strata. In order to do linear regression, we assume that all variables are multivariate normal. This must be tested by checking the residual and qqnorm plots. Linear regression also assumes that there is little or no multicollinearity in the data.
+4) If we choose to do ordinal regression, the data must fit the proportional odds assumption that all categories are equally spaced.
 
 First, we check to see if all variables are multivariate normal. See Figure 3.
 
@@ -147,10 +153,7 @@ Since these plots show that the y variable is not normally distributed for each 
 Assumptions of the Ordinal logistic regression are; (1) one predictor in the model (`recycling frequency`), (2) each category has its own regression model, (3) no category has 0 count. After fitting the additive model, we also explored multiplicative model to understand whether there are any interaction effects.
 
 
-
 ## Results
-
-
 
 ```{r ANOVA to find confounders}
 simple_model= lm(data=tidy_data, recycling_freq_nf ~ self_rating_before)
@@ -160,9 +163,10 @@ interaction_effects = lm(data=tidy_data, recycling_freq_nf ~ self_rating_before 
 
 summary(simple_model)
 ```
-> The simple model with just X and Y has a significant F-statistic, meaning we can reject the null hypothesis that there is no effect of X on Y.
 
-> In order to understand if there are any confounding variables though, we need to take a closer look and compare the simple full model with the interaction model that include confounding variables.
+The simple model with just X and Y has a significant F-statistic, meaning we can reject the null hypothesis that there is no effect of X on Y.
+
+In order to understand if there are any confounding variables though, we need to take a closer look and compare the simple full model with the interaction model that include confounding variables.
 
 
 ```{R all variables}
@@ -170,8 +174,10 @@ all_variables= lm(data=tidy_data, recycling_freq_nf ~ self_rating_before + backg
 
 summary(all_variables)
 ```
-> Including all predictive variables in the model shows that on average, for each unit increase in X, there is a 0.176 increase in y. This means that for every increase in self-importance of sustainability rating there is a 0.17 increase in frequency of recycling. The p-value is 0.000103, which is significant with an alpha of 0.05. Therefore, we can reject the null hypothesis and say that there is a positive relationship between self-rated importance of being sustianable and one's frequency of recycling.
 
+Including all predictive variables in the model shows that on average, for each unit increase in X, there is a 0.176 increase in y. This means that for every increase in self-importance of sustainability rating there is a 0.17 increase in frequency of recycling. The p-value is 0.000103, which is significant with an alpha of 0.05. Therefore, we can reject the null hypothesis and say that there is a positive relationship between self-rated importance of being sustianable and one's frequency of recycling.
+
+Analyzing the residual and QQplot, we noticed that the linear regression assumption is violated. But, this model still gives us some insight.
 
 We compiled the self-rated sustainability importance, recycling frequency, age and background information from 68 survey respondents. A general idea of the relationship between self-rated sustainability importance and recycling frequency can be shown by the following boxplots (Figure 4).
 
@@ -288,22 +294,20 @@ poa <- function(y) {
 (p <- with(tidy_data, summary(as.numeric(recycling_freq_nf2) ~  self_rating_before + background + age, fun=poa)))
 ```
 
-
-
 ## Discussion
 
 We found that self-rated opinion of the importance of environmental sustanability is a significant predictor of recyling frequency behaviours. In our study we did not find age or family values to be significant confounders. Interestingly, in the literature it appears that income is a significant predictor of recycling frequency, which we did not include in our survey (Schultz et al. 1995).
 
 ### Discussion of results
 
-> The main assumption of ordinal regression is that each predicted category is evenly spaced. We are assuming that this is true, as it is plausible that the difference between each recycling category is equally different to people taking our survey. Of course, it is possible to validate this assumption as we can not read people's minds to make sure that they understand the differences between each category and perceive them as evenly spaced. 
+The main assumption of ordinal regression is that each predicted category is evenly spaced. We are assuming that this is true, as it is plausible that the difference between each recycling category is equally different to people taking our survey. Of course, it is possible to validate this assumption as we can not read people's minds to make sure that they understand the differences between each category and perceive them as evenly spaced. 
 
 
 ### Discussion of survey/study design
 
-> To make this study as causal as possible we designed our questions to have a reasonable number of categories for ordinal regression analysis, and included questions that would allow us to reasonably accurately assess whether there were any confounding variables that might be affecting our hypothesized relationship. This study designed allowed us to easily make conclusions about each category of recycling frequency. 
+To make this study as causal as possible we designed our questions to have a reasonable number of categories for ordinal regression analysis, and included questions that would allow us to reasonably accurately assess whether there were any confounding variables that might be affecting our hypothesized relationship. This study designed allowed us to easily make conclusions about each category of recycling frequency. 
 
-> There are other difficulties with self-reported survey data, such as reporting bias; We are aware that there is most-likely a positive inflation of respondent's recycling habits due to reporting bias. There may also be respondent bias, as we surveyed mostly our classmates and professors, and a few other university students. Nonetheless, we will assume that the vast majority of people who didn't respond would have responded in the same way as those who did. However, it should be noted that these conclusions may only generalize well to a similar demographic of people, such as those studying STEM subjects in University. In future studies, it would be interesting to include education and area of study as possible confounders. Another form of bias that we tried to avoid is researcher bias, which can happen when we let our own biases affect how we form the survey questions. This could affect the purity of the study. To avoid this, we asked a few classmates if the survey questions made sense and appeared un-biased, to gain some outside perspective.
+There are other difficulties with self-reported survey data, such as reporting bias; We are aware that there is most-likely a positive inflation of respondent's recycling habits due to reporting bias. There may also be respondent bias, as we surveyed mostly our classmates and professors, and a few other university students. Nonetheless, we will assume that the vast majority of people who didn't respond would have responded in the same way as those who did. However, it should be noted that these conclusions may only generalize well to a similar demographic of people, such as those studying STEM subjects in University. In future studies, it would be interesting to include education and area of study as possible confounders. Another form of bias that we tried to avoid is researcher bias, which can happen when we let our own biases affect how we form the survey questions. This could affect the purity of the study. To avoid this, we asked a few classmates if the survey questions made sense and appeared un-biased, to gain some outside perspective.
 
 
 ## Bonus analysis:
@@ -316,22 +320,7 @@ tidy_data_ttest <- tidy_data %>%
 t.test(tidy_data_ttest$self_rating_before, tidy_data_ttest$self_rating_after, paired=TRUE)
 ```
 
-> We use a paired sample t-test compring the before/after self-rating of the participants who have watched the video. The p-value is 0.2613 which is not significant. Thus, we could not reject the null hypothesis which is watching viedeo have an effect on person's sustainability self-rating.
+We use a paired sample t-test compring the before/after self-rating of the participants who have watched the video. The p-value is 0.2613 which is not significant. Thus, we could not reject the null hypothesis which is watching viedeo have an effect on person's sustainability self-rating.
 
 ### References
-1) Schultz, P. W., Oskamp, S., & Mainieri, T. (1995). Who recycles and when? A review of personal and situational factors. Journal of Environmental Psychology, 15(2), 105-121. http://dx.doi.org/10.1016/0272-4944(95)90019-5.
-
-
-### NOTES for reference
- >3-5 page report
-
-    > Your target audience is other Data Scientists who are not familiar with your project.
-    Clearly introduce the survey topic and question you were interested in answering.
-    Link to your study's data and code in the methods section of your report.
-    Include effective visualizations and/or tables that help communicate your findings.
-    Your discussion should have 2 key focuses:
-        Discussing the results and findings of your survey and analysis of the survey data.
-        Discussing your survey/study design, specifically:
-        what did you do well to make this study as causal as possible?
-        what was not done well and how did that effect your studies conclusions?
-        what would you do differently next time to improve your survey/study design and why?
+- Schultz, P. W., Oskamp, S., & Mainieri, T. (1995). Who recycles and when? A review of personal and situational factors. Journal of Environmental Psychology, 15(2), 105-121. http://dx.doi.org/10.1016/0272-4944(95)90019-5.
