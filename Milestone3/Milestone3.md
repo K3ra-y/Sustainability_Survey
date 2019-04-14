@@ -123,8 +123,12 @@ grid.arrange(resid_plot,qq_norm,nrow=1)
 
 ![](images_report/unnamed-chunk-1-1.png)
 
+
      > Figure 3: Residual and QQ-norm plot of residuals under linear model assumptions
       
+
+> Figure 3: Residual and QQ-norm plot of residuals under linear model assumptions
+
 
 Since these plots show that the y variable is not normally distributed for each x, we will not be able to do linear regression. This is unfortunate because linear regression is easy to interpret. However, ordinal logistic regression will allow more precision for each change in category of Y, and will allow us to capture the inherent order of the recycling categories. Thus, ordinal linear regression is performed to analyze the relationship between `self-rated sustainability importance` and `recycling frequency`, as well as `age of the individual` and `background (environmentally-conscious family)`.
 
@@ -133,7 +137,34 @@ Assumptions of the Ordinal logistic regression are; (1) one main predictor in th
 Results
 -------
 
+
 Even though we know that our data violates the linear regression assumptions, we still conducted it as it may provide some insight.
+
+We compiled the self-rated sustainability importance, recycling frequency, age and background information from 68 survey respondents. A general idea of the relationship between self-rated sustainability importance and recycling frequency can be shown by the following boxplots (Figure 4).
+
+``` r
+# Visualization of relationship between recycling freq. and self rating before watching the video
+tidy_data %>%
+  ggplot(aes(x = recycling_freq, y = self_rating_before)) +
+  geom_boxplot(size = .75) +
+  geom_jitter(alpha = .1, height = .2) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) +
+  coord_flip() +
+  theme_bw() +
+  labs(y = "Rating before watching the video", x = "Recycling Frequency") +
+  ggtitle("Sustainability Importance vs. Recycling Freq.") +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 13))
+```
+
+![](images_report/visualization-1.png)
+
+> Figure 4: Sustainability importance vs. Recycling Frequency
+
+Looking at the boxplots if figure 2, it is easy to notice that people who recycle more often consider sustainability more important (having a higher self-rated mean, and narrower range) than those who rarely recycle, which suggests that a person's opinion about sustainability importance influences the recycling frequency. Even though, we know from the residual and QQplot that the linear regression assumption is violated, we attempted to fit a linear model to see if we can get any insight from it.
+
+### Linear Model
 
 ``` r
 simple_model= lm(data=tidy_data, recycling_freq_nf ~ self_rating_before)
@@ -190,6 +221,44 @@ tidy_data %>%
 Looking at the boxplots if figure 2, it is easy to notice that people who recycle more often consider sustainability more important (having a higher self-rated mean, and narrower range) than those who rarely recycle, which suggests that a person's opinion about sustainability importance influences their recycling frequency.
 
 Thus, in order to be more confident, we will be fitting an ordinal regression model considering self-rated importance of sustainability before watching the video, individuals' age and background as predictors:
+
+In order to understand if there are any confounding variables though, we need to take a closer look and compare the simple full model with the interaction model that include confounding variables.
+
+``` r
+all_variables= lm(data=tidy_data, recycling_freq_nf ~ self_rating_before + background + age)
+
+summary(all_variables)
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = recycling_freq_nf ~ self_rating_before + background + 
+    ##     age, data = tidy_data)
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -2.7171 -0.2977  0.1394  0.3962  0.8692 
+    ## 
+    ## Coefficients:
+    ##                     Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)         3.108770   0.376207   8.263 1.38e-11 ***
+    ## self_rating_before  0.166487   0.042164   3.949 0.000204 ***
+    ## backgroundNo       -0.143422   0.159799  -0.898 0.372915    
+    ## age25-29            0.001856   0.200379   0.009 0.992640    
+    ## age30-39            0.153181   0.216479   0.708 0.481843    
+    ## age40+              0.086924   0.226483   0.384 0.702441    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 0.6156 on 62 degrees of freedom
+    ## Multiple R-squared:  0.2722, Adjusted R-squared:  0.2135 
+    ## F-statistic: 4.638 on 5 and 62 DF,  p-value: 0.001166
+
+Including all predictive variables in the model shows that on average, for each unit increase in X, there is a 0.176 increase in y. This means that for every increase in self-importance of sustainability rating there is a 0.17 increase in frequency of recycling. The p-value is 0.000103, which is significant with an alpha of 0.05. Therefore, we can reject the null hypothesis and say that there is a positive relationship between self-rated importance of being sustianable and one's frequency of recycling.
+
+Although the linear model was insightful, given that its assumption was violated as state before, we decided to fit an ordinal regression model considering self-rated importance of sustainability before watching the video, individuals' age and background as predictors.
+
+### Ordinal Regression
 
 ``` r
 # Fit a OLR model without interaction

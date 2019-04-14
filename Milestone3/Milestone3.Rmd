@@ -101,7 +101,7 @@ ggplot(tidy_data, aes(age)) +
 
 ```
 
- > Figure 2: Redistribution of age categories.
+> Figure 2: Redistribution of age categories.
 
 We first want to analyze whether our relationship has confounders.
 
@@ -146,8 +146,13 @@ qq_norm <- lm_data %>%
 
 grid.arrange(resid_plot,qq_norm,nrow=1)
 ```
+
      
      > Figure 3: Residual and QQ-norm plot of residuals under linear model assumptions
+
+
+> Figure 3: Residual and QQ-norm plot of residuals under linear model assumptions
+
       
 Since these plots show that the y variable is not normally distributed for each x, we will not be able to do linear regression. This is unfortunate because linear regression is easy to interpret. However, ordinal logistic regression will allow more precision for each change in category of Y, and will allow us to capture the inherent order of the recycling categories. Thus, ordinal linear regression is performed to analyze the relationship between `self-rated sustainability importance` and `recycling frequency`, as well as `age of the individual` and `background (environmentally-conscious family)`.
 
@@ -156,7 +161,33 @@ Assumptions of the Ordinal logistic regression are; (1) one main predictor in th
 
 ## Results
 
+
 Even though we know that our data violates the linear regression assumptions, we still conducted it as it may provide some insight. 
+
+We compiled the self-rated sustainability importance, recycling frequency, age and background information from 68 survey respondents. A general idea of the relationship between self-rated sustainability importance and recycling frequency can be shown by the following boxplots (Figure 4).
+
+```{r visualization}
+# Visualization of relationship between recycling freq. and self rating before watching the video
+tidy_data %>%
+  ggplot(aes(x = recycling_freq, y = self_rating_before)) +
+  geom_boxplot(size = .75) +
+  geom_jitter(alpha = .1, height = .2) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) +
+  coord_flip() +
+  theme_bw() +
+  labs(y = "Rating before watching the video", x = "Recycling Frequency") +
+  ggtitle("Sustainability Importance vs. Recycling Freq.") +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 13))
+```
+
+> Figure 4: Sustainability importance vs. Recycling Frequency
+
+Looking at the boxplots if figure 2, it is easy to notice that people who recycle more often consider sustainability more important (having a higher self-rated mean, and narrower range) than those who rarely recycle, which suggests that a person's opinion about sustainability importance influences the recycling frequency. Even though, we know from the residual and QQplot that the linear regression assumption is violated, we attempted to fit a linear model to see if we can get any insight from it.
+
+### Linear Model
+
 
 ```{r ANOVA to find confounders}
 simple_model= lm(data=tidy_data, recycling_freq_nf ~ self_rating_before)
@@ -171,6 +202,7 @@ summary(all_variables)
 The simple model with just X and Y has a significant F-statistic, meaning we can reject the null hypothesis that there is no effect of X on Y. 
 
 Including all predictive variables in the model shows that on average, for each unit increase in X, there is a 0.176 increase in y. This means that for every increase in self-importance of sustainability rating there is a 0.17 increase in frequency of recycling. The p-value is 0.000103, which is significant with an alpha of 0.05. Therefore, we can reject the null hypothesis and say that there is a positive relationship between self-rated importance of being sustianable and one's frequency of recycling. Perhaps if more data is collected, the normality assumptions for linear regression would be met, and this type of linear regression could be used.
+
 
 
 We compiled the self-rated sustainability importance, recycling frequency, age and background information from 68 survey respondents. A general idea of the relationship between self-rated sustainability importance and recycling frequency can be shown by the following boxplots (Figure 4).
@@ -195,6 +227,13 @@ tidy_data %>%
 Looking at the boxplots if figure 2, it is easy to notice that people who recycle more often consider sustainability more important (having a higher self-rated mean, and narrower range) than those who rarely recycle, which suggests that a person's opinion about sustainability importance influences their recycling frequency.
 
 Thus, in order to be more confident, we will be fitting an ordinal regression model considering self-rated importance of sustainability before watching the video, individuals' age and background as predictors:
+
+Including all predictive variables in the model shows that on average, for each unit increase in X, there is a 0.176 increase in y. This means that for every increase in self-importance of sustainability rating there is a 0.17 increase in frequency of recycling. The p-value is 0.000103, which is significant with an alpha of 0.05. Therefore, we can reject the null hypothesis and say that there is a positive relationship between self-rated importance of being sustianable and one's frequency of recycling.
+
+Although the linear model was insightful, given that its assumption was violated as state before, we decided to fit an ordinal regression model considering self-rated importance of sustainability before watching the video, individuals' age and background as predictors.
+
+### Ordinal Regression
+
 
 ```{r olr model}
 # Fit a OLR model without interaction
@@ -301,7 +340,7 @@ The main assumption of ordinal regression is that each predicted category is eve
 
 To make this study as causal as possible we designed our questions to have a reasonable number of categories for ordinal regression analysis, and included questions that would allow us to reasonably accurately assess whether there were any confounding variables that might be affecting our hypothesized relationship. This study designed allowed us to easily make conclusions about each category of recycling frequency. 
 
-There are other difficulties with self-reported survey data, such as reporting bias; We are aware that there is most-likely a positive inflation of respondent's recycling habits due to reporting bias. There may also be respondent bias, as we surveyed mostly our classmates and professors, and a few other university students. Nonetheless, we will assume that the vast majority of people who didn't respond would have responded in the same way as those who did. However, it should be noted that these conclusions may only generalize well to a similar demographic of people, such as those studying STEM subjects in University. In future studies, it would be interesting to include education and area of study as possible confounders. Another form of bias that we tried to avoid is researcher bias, which can happen when we let our own biases affect how we form the survey questions. This could affect the purity of the study. To avoid this, we asked a few classmates if the survey questions made sense and appeared un-biased, to gain some outside perspective.
+There are other difficulties with self-reported survey data, such as reporting bias. We are aware that there is most-likely a positive inflation of respondent's recycling habits due to reporting bias. There may also be respondent bias, as we surveyed mostly our classmates and professors, and a few other university students. Nonetheless, we will assume that the vast majority of people who didn't respond would have responded in the same way as those who did. However, it should be noted that these conclusions may only generalize well to a similar demographic of people, such as those studying STEM subjects in University. In future studies, it would be interesting to include education and area of study as possible confounders. Another form of bias that we tried to avoid is researcher bias, which can happen when we let our own biases affect how we form the survey questions. This could affect the purity of the study. To avoid this, we asked a few classmates if the survey questions made sense and appeared un-biased, to gain some outside perspective.
 
 
 ## Bonus analysis:

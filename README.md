@@ -18,6 +18,8 @@
 ||[Private Repo on `Github.ubc.ca`](https://github.ubc.ca/MDS-2018-19/Sustainable_Survey)|
 ||[Data on private repo](https://github.ubc.ca/MDS-2018-19/Sustainable_Survey/blob/master/data/Sustainable%20Survey_April%204%2C%202019_18.11.csv)|
 ||[EDA on `Github.com` repo](https://github.com/UBC-MDS/Sustainability_Survey/blob/master/Milestone2/Milestone2_EDA.md)|
+|Milestone 3|[Peer Review](https://github.com/UBC-MDS/Self-perceived-Difficulty-of-DSCI-512-Analysis/issues/45)|
+||[Report](https://github.com/UBC-MDS/Sustainability_Survey/blob/master/Milestone3/Milestone3.md)|
 
 ### Dependencies
 
