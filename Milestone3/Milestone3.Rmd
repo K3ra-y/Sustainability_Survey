@@ -101,7 +101,7 @@ ggplot(tidy_data, aes(age)) +
 
 ```
 
- > Figure 2: Redistribution of age categories.
+> Figure 2: Redistribution of age categories.
 
 We first want to analyze whether our relationship has confounders.
 
@@ -146,7 +146,8 @@ qq_norm <- lm_data %>%
 
 grid.arrange(resid_plot,qq_norm,nrow=1)
 ```
-      > Figure 3: Residual and QQ-norm plot of residuals under linear model assumptions
+
+> Figure 3: Residual and QQ-norm plot of residuals under linear model assumptions
       
 Since these plots show that the y variable is not normally distributed for each x, we will not be able to do linear regression. This is unfortunate because linear regression is easy to interpret. However, ordinal logistic regression will allow more precision for each change in category of Y, and will allow us to capture the inherent order of the recycling categories. Thus, ordinal linear regression is performed to analyze the relationship between `self-rated sustainability importance` and `recycling frequency`, as well as `age of the individual` and `background (environmentally-conscious family)`.
 
@@ -196,7 +197,8 @@ tidy_data %>%
         axis.text = element_text(size = 12),
         axis.title = element_text(size = 13))
 ```
-    *Figure 4: Sustainability importance vs. Recycling Frequency*
+
+> Figure 4: Sustainability importance vs. Recycling Frequency
 
 Looking at the boxplots if figure 2, it is easy to notice that people who recycle more often consider sustainability more important (having a higher self-rated mean, and narrower range) than those who rarely recycle, which suggests that a person's opinion about sustainability importance influences the recycling frequency.
 
