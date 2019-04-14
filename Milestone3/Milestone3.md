@@ -45,10 +45,6 @@ Data was collected through an online survey from participants who agreed to give
 
 After some exploratory data analysis done in [Milestone 2](https://github.com/UBC-MDS/Sustainability_Survey/blob/master/Milestone2/Milestone2_EDA.md) we noticed that the ages were not evenly distributed (Figure 1). Therefore, we decided to regroup the ages from 30-39 into one age group.
 
-``` r
-head(tidy_data)
-```
-
     ##   self_rating_before recycling_freq   age background        watch
     ## 1                  7        Usually 20-24        Yes         <NA>
     ## 2                  1        Usually 30-34         No         <NA>
@@ -63,11 +59,6 @@ head(tidy_data)
     ## 4                 9                 5
     ## 5                 3                 4
     ## 6                 9                 4
-
-``` r
-tidy_data <- tidy_data %>%
-  mutate(age = if_else((age == "30-34" | age == "35-39"), "30-39", as.character(age)))
-```
 
 ![](https://raw.githubusercontent.com/UBC-MDS/Sustainability_Survey/master/Milestone2/Milestone2_EDA_files/imgs/age%20distribution-1.png)
 
@@ -130,14 +121,19 @@ qq_norm <- lm_data %>%
 grid.arrange(resid_plot,qq_norm,nrow=1)
 ```
 
-![](images_report/unnamed-chunk-1-1.png) &gt; Figure 3: Residual and QQ-norm plot of residuals under linear model assumptions
+![](images_report/unnamed-chunk-1-1.png)
+
+     > Figure 3: Residual and QQ-norm plot of residuals under linear model assumptions
+      
 
 Since these plots show that the y variable is not normally distributed for each x, we will not be able to do linear regression. This is unfortunate because linear regression is easy to interpret. However, ordinal logistic regression will allow more precision for each change in category of Y, and will allow us to capture the inherent order of the recycling categories. Thus, ordinal linear regression is performed to analyze the relationship between `self-rated sustainability importance` and `recycling frequency`, as well as `age of the individual` and `background (environmentally-conscious family)`.
 
-Assumptions of the Ordinal logistic regression are; (1) one predictor in the model (`recycling frequency`), (2) each category has its own regression model, (3) no category has 0 count. After fitting the additive model, we also explored multiplicative model to understand whether there are any interaction effects.
+Assumptions of the Ordinal logistic regression are; (1) one main predictor in the model (`recycling frequency`), (2) each category has its own regression model, (3) no category has 0 count. After fitting the additive model, we also explored multiplicative model to understand whether there are any interaction effects.
 
 Results
 -------
+
+Even though we know that our data violates the linear regression assumptions, we still conducted it as it may provide some insight.
 
 ``` r
 simple_model= lm(data=tidy_data, recycling_freq_nf ~ self_rating_before)
@@ -169,41 +165,7 @@ summary(simple_model)
 
 The simple model with just X and Y has a significant F-statistic, meaning we can reject the null hypothesis that there is no effect of X on Y.
 
-In order to understand if there are any confounding variables though, we need to take a closer look and compare the simple full model with the interaction model that include confounding variables.
-
-``` r
-all_variables= lm(data=tidy_data, recycling_freq_nf ~ self_rating_before + background + age)
-
-summary(all_variables)
-```
-
-    ## 
-    ## Call:
-    ## lm(formula = recycling_freq_nf ~ self_rating_before + background + 
-    ##     age, data = tidy_data)
-    ## 
-    ## Residuals:
-    ##     Min      1Q  Median      3Q     Max 
-    ## -2.7171 -0.2977  0.1394  0.3962  0.8692 
-    ## 
-    ## Coefficients:
-    ##                     Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)         3.108770   0.376207   8.263 1.38e-11 ***
-    ## self_rating_before  0.166487   0.042164   3.949 0.000204 ***
-    ## backgroundNo       -0.143422   0.159799  -0.898 0.372915    
-    ## age25-29            0.001856   0.200379   0.009 0.992640    
-    ## age30-39            0.153181   0.216479   0.708 0.481843    
-    ## age40+              0.086924   0.226483   0.384 0.702441    
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## 
-    ## Residual standard error: 0.6156 on 62 degrees of freedom
-    ## Multiple R-squared:  0.2722, Adjusted R-squared:  0.2135 
-    ## F-statistic: 4.638 on 5 and 62 DF,  p-value: 0.001166
-
-Including all predictive variables in the model shows that on average, for each unit increase in X, there is a 0.176 increase in y. This means that for every increase in self-importance of sustainability rating there is a 0.17 increase in frequency of recycling. The p-value is 0.000103, which is significant with an alpha of 0.05. Therefore, we can reject the null hypothesis and say that there is a positive relationship between self-rated importance of being sustianable and one's frequency of recycling.
-
-Analyzing the residual and QQplot, we noticed that the linear regression assumption is violated. But, this model still gives us some insight.
+Including all predictive variables in the model shows that on average, for each unit increase in X, there is a 0.176 increase in y. This means that for every increase in self-importance of sustainability rating there is a 0.17 increase in frequency of recycling. The p-value is 0.000103, which is significant with an alpha of 0.05. Therefore, we can reject the null hypothesis and say that there is a positive relationship between self-rated importance of being sustianable and one's frequency of recycling. Perhaps if more data is collected, the normality assumptions for linear regression would be met, and this type of linear regression could be used.
 
 We compiled the self-rated sustainability importance, recycling frequency, age and background information from 68 survey respondents. A general idea of the relationship between self-rated sustainability importance and recycling frequency can be shown by the following boxplots (Figure 4).
 
@@ -225,9 +187,9 @@ tidy_data %>%
 
 ![](images_report/visualization-1.png) *Figure 4: Sustainability importance vs. Recycling Frequency*
 
-Looking at the boxplots if figure 2, it is easy to notice that people who recycle more often consider sustainability more important (having a higher self-rated mean, and narrower range) than those who rarely recycle, which suggests that a person's opinion about sustainability importance influences the recycling frequency.
+Looking at the boxplots if figure 2, it is easy to notice that people who recycle more often consider sustainability more important (having a higher self-rated mean, and narrower range) than those who rarely recycle, which suggests that a person's opinion about sustainability importance influences their recycling frequency.
 
-Thus, fitting an ordinal regression model considering self-rated importance of sustainability before watching the video, individuals' age and background as predictors:
+Thus, in order to be more confident, we will be fitting an ordinal regression model considering self-rated importance of sustainability before watching the video, individuals' age and background as predictors:
 
 ``` r
 # Fit a OLR model without interaction
@@ -261,7 +223,7 @@ print(paste("Overall accuracy = ", accuracy)) # The larger the better
 
     ## [1] "Overall accuracy =  0.661764705882353"
 
-The values look nice, so now we can get the coefficients:
+The results have resonable accuracy and AIC scores, so now we can get the coefficients and compare to the model with interaction effects:
 
 ``` r
 # Get the coefficients
@@ -308,11 +270,7 @@ Interpreting the coefficients:
 -   Example of estimate interpretation: ~5.49 is the expected log odds of recycle "usually" versus "always" when all the predictors are 0.
 -   If a person rates themselves one unit higher, the odds of increase in recycling from a lower frequency to a higher frequency is multiplied by 1.96.
 
-``` r
-upper_CI = exp(0.6730300 + 1.96*0.1722552)
-lower_CI = exp(0.6730300 - 1.96*0.1722552)
-print(paste("95% CI for non-interaction model= ", lower_CI, upper_CI))
-```
+<!-- -->
 
     ## [1] "95% CI for non-interaction model=  1.39851338977876 2.74738676330879"
 
@@ -328,24 +286,9 @@ tidy_data <- tidy_data %>%
   cbind(., olr_model_decision2 = predict(olr_model_interaction))                   #estimated result according to the probabilities
 ```
 
-``` r
-gf2 <- table(tidy_data$recycling_freq, tidy_data$olr_model_decision2)
-accuracy <- (gf2[1] + gf2[6] + gf2[11] + gf2[16]) / 68 # 68 observations
-
-print(paste("AIC for OLR model with interaction = ", AIC(olr_model_interaction)))
-```
-
     ## [1] "AIC for OLR model with interaction =  113.819560665681"
 
-``` r
-print(paste("Log likelihood of OLR model with interaction = ", logLik(olr_model_interaction)))
-```
-
     ## [1] "Log likelihood of OLR model with interaction =  -45.9097803328404"
-
-``` r
-print(paste("Overall accuracy of OLR model with interaction = ", accuracy)) # The larger the better
-```
 
     ## [1] "Overall accuracy of OLR model with interaction =  0.779411764705882"
 
@@ -397,7 +340,7 @@ We found that self-rated opinion of the importance of environmental sustanabilit
 
 ### Discussion of results
 
-The main assumption of ordinal regression is that each predicted category is evenly spaced. We are assuming that this is true, as it is plausible that the difference between each recycling category is equally different to people taking our survey. Of course, it is possible to validate this assumption as we can not read people's minds to make sure that they understand the differences between each category and perceive them as evenly spaced.
+The main assumption of ordinal regression is that each predicted category is evenly spaced. We are assuming that this is true, as it is plausible that the difference between each recycling category is equally different to people taking our survey. It is not possible to read people's minds to make sure that they understand the differences between each category and perceive them as evenly spaced. However, we can test this assumption using R's poa function. In the future, we will think a bit more about how many categories we want to have for an ordinal regression, and how to go about logically testing our assumptions before jumping into the analysis. We learned a lot, and are confident that one's opinions about their importance of being sustainable truly reflect their recycling habits in a positive relationship.
 
 ### Discussion of survey/study design
 
@@ -428,7 +371,7 @@ t.test(tidy_data_ttest$self_rating_before, tidy_data_ttest$self_rating_after, pa
     ## mean of the differences 
     ##              -0.1956522
 
-We use a paired sample t-test compring the before/after self-rating of the participants who have watched the video. The p-value is 0.2613 which is not significant. Thus, we could not reject the null hypothesis which is watching viedeo have an effect on person's sustainability self-rating.
+We use a paired sample t-test compring the before/after self-rating of the participants who have watched the video. The p-value is 0.2613 which is not significant. Thus, we can not reject the null hypothesis, which is watching the video has an effect on person's sustainability self-rating. We conclude that watching the video does not have an effect on one's self-rated importance of sustainability.
 
 ### References
 
